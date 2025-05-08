@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -80,8 +81,9 @@ function list(idstr){
 					<td width="75%" height="22" class="left-font01">欢迎您，<span class="left-font02">${currentUser.realName}</span></td>
 				  </tr>
 				  <tr>
-					<td height="22" class="left-font01">
-						[&nbsp;<a href="<c:url value='/logout' target="_top" class="left-font01">退出</a>&nbsp;]</td>
+                      <td height="22" class="left-font01">
+                          [&nbsp;<a href="<c:url value='/logout'/>" target="_top" class="left-font01">退出</a>&nbsp;]
+                      </td>
 				  </tr>
 				</table>
 			</td>
@@ -136,28 +138,30 @@ function list(idstr){
       </table>
 
 	  <!--  用户系统结束    -->
-
-	  <!--  人员系统开始    -->
-	  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="left-table03">
-          <tr>
-            <td height="29"><table width="85%" border="0" align="center" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td width="8%" height="12"><img name="img3" id="img3" src="images/ico04.gif" width="8" height="11" /></td>
-                  <td width="92%"><a href="javascript:" target="mainFrame" class="left-font03" onClick="list('3');" >人员系统</a></td>
-                </tr>
-            </table></td>
-          </tr>
-      </table>
-
-	  <table id="subtree3" style="DISPLAY: none" width="80%" border="0" align="center" cellpadding="0" cellspacing="0" class="left-table02">
-        <tr>
-          <td width="9%" height="20" ><img id="xiaotu8" src="images/ico06.gif" width="8" height="12" /></td>
-          <td width="91%"><a href="employee/list" target="mainFrame" class="left-font03" onClick="tupian('8');">人员信息查看</a></td>
-        </tr>
-      </table>
-
-	  <!--  人员系统结束    -->
-
+    <!--  消息系统开始    -->
+    <TABLE width="100%" border="0" cellpadding="0" cellspacing="0" class="left-table03">
+    <tr>
+    <td height="29">
+    <table width="85%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr>
+    <td width="8%"><img name="img7" id="img7" src="images/ico04.gif" width="8" height="11" /></td>
+    <td width="92%">
+    <a href="javascript:" target="mainFrame" class="left-font03" onClick="list('7');" >消息管理</a></td>
+    </tr>
+    </table>
+    </td>
+    </tr>
+    </TABLE>
+    <table id="subtree7" style="DISPLAY: none" width="80%" border="0" align="center" cellpadding="0"
+    cellspacing="0" class="left-table02">
+    <tr>
+    <td width="9%" height="20" ><img id="xiaotu24" src="../images/ico06.gif" width="8" height="12" /></td>
+    <td width="91%">
+    <a href="message/list" target="mainFrame" class="left-font03" onClick="tupian('24');">消息信息列表
+    </a></td>
+    </tr>
+    </table>
+    <!--  消息系统结束    -->
 	   <!--  考勤系统开始    -->
 	   <table width="100%" border="0" cellpadding="0" cellspacing="0" class="left-table03">
           <tr>

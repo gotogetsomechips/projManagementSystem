@@ -35,12 +35,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void lockUser(String username) {
-        userMapper.updateStatusByUsername(username, "locked");
+        userMapper.updateStatusByUsername(username, "1");
     }
 
     @Override
     public void unlockUser(String username) {
-        userMapper.updateStatusByUsername(username, "active");
+        userMapper.updateStatusByUsername(username, "0");
     }
     @Override
     public int deleteUser(Integer id) {
@@ -137,7 +137,10 @@ public class UserServiceImpl implements UserService {
                 .sorted(comparator)
                 .collect(Collectors.toList());
     }
-
+    @Override
+    public User getUserByUsername(String username) {
+        return userMapper.selectByUsername(username);
+    }
     private Comparator<User> getComparator(String sortField) {
         switch(sortField) {
             case "username":

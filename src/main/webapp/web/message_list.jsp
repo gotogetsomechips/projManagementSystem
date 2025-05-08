@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>任务管理系统</title>
+    <title>消息管理系统</title>
     <style type="text/css">
         body {
             margin-left: 0px;
@@ -132,28 +132,10 @@
             border-radius: 3px;
             cursor: pointer;
         }
-        .priority-high {
-            color: red;
-            font-weight: bold;
-        }
-        .priority-medium {
-            color: orange;
-            font-weight: bold;
-        }
-        .priority-low {
-            color: green;
-            font-weight: bold;
-        }
-        .status-not-started {
-            color: #666;
-        }
-        .status-in-progress {
-            color: #1E90FF;
-        }
-        .status-completed {
+        .status-active {
             color: green;
         }
-        .status-cancelled {
+        .status-inactive {
             color: red;
         }
     </style>
@@ -194,16 +176,16 @@
                 // 根据消息类型设置显示内容
                 switch(message) {
                     case "add_success":
-                        displayMessage = "任务添加成功！";
+                        displayMessage = "消息添加成功！";
                         break;
                     case "edit_success":
-                        displayMessage = "任务修改成功！";
+                        displayMessage = "消息修改成功！";
                         break;
                     case "delete_success":
-                        displayMessage = "任务删除成功！";
+                        displayMessage = "消息删除成功！";
                         break;
                     case "delete_fail":
-                        displayMessage = "任务删除失败！";
+                        displayMessage = "消息删除失败！";
                         break;
                     default:
                         displayMessage = message;
@@ -256,15 +238,15 @@
             }
 
             if (ids.length === 0) {
-                showModal("请选择要删除的任务");
+                showModal("请选择要删除的消息");
                 return;
             }
 
-            if (confirm("确定要删除选中的任务吗？")) {
+            if (confirm("确定要删除选中的消息吗？")) {
                 // 创建隐藏表单提交
                 var form = document.createElement("form");
                 form.method = "post";
-                form.action = "${pageContext.request.contextPath}/task/batchDelete";
+                form.action = "${pageContext.request.contextPath}/message/batchDelete";
 
                 // 添加ids参数
                 ids.forEach(function(id) {
@@ -288,13 +270,20 @@
                 sortDirectionInput.value = currentSort.direction;
                 form.appendChild(sortDirectionInput);
 
+                // 添加页码参数
+                var pageNumInput = document.createElement("input");
+                pageNumInput.type = "hidden";
+                pageNumInput.name = "pageNum";
+                pageNumInput.value = "${pageNum}";
+                form.appendChild(pageNumInput);
+
                 document.body.appendChild(form);
                 form.submit();
             }
         }
 
-        function addTask() {
-            window.location.href = "${pageContext.request.contextPath}/task/toAdd";
+        function addMessage() {
+            window.location.href = "${pageContext.request.contextPath}/message/toAdd";
         }
 
         function sort(field) {
@@ -309,7 +298,7 @@
             // 更新排序指示器
             updateSortIndicators();
 
-            // 获取所有任务行
+            // 获取所有消息行
             var rows = $('tr.bgcolor').get();
 
             // 根据字段和方向进行排序
@@ -320,30 +309,6 @@
                 if (field === 'title') {
                     A = $(a).find('td:eq(1)').text().trim().toLowerCase();
                     B = $(b).find('td:eq(1)').text().trim().toLowerCase();
-                } else if (field === 'creator') {
-                    A = $(a).find('td:eq(2)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(2)').text().trim().toLowerCase();
-                } else if (field === 'executor') {
-                    A = $(a).find('td:eq(3)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(3)').text().trim().toLowerCase();
-                } else if (field === 'priority') {
-                    // 提取优先级文本（不含HTML标记）
-                    A = $(a).find('td:eq(4)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(4)').text().trim().toLowerCase();
-
-                    // 自定义排序顺序：高>中>低
-                    var priorityOrder = {'高': 3, '中': 2, '低': 1};
-                    A = priorityOrder[A] || 0;
-                    B = priorityOrder[B] || 0;
-                } else if (field === 'status') {
-                    // 提取状态文本（不含HTML标记）
-                    A = $(a).find('td:eq(5)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(5)').text().trim().toLowerCase();
-
-                    // 自定义排序顺序：未开始>进行中>已完成>已取消
-                    var statusOrder = {'未开始': 4, '进行中': 3, '已完成': 2, '已取消': 1};
-                    A = statusOrder[A] || 0;
-                    B = statusOrder[B] || 0;
                 } else {
                     // 默认按ID排序
                     A = $(a).find('input[name="delid"]').val();
@@ -383,7 +348,7 @@
         }
 
         function goToPage(pageNum) {
-            var url = "${pageContext.request.contextPath}/task/list?pageNum=" + pageNum;
+            var url = "${pageContext.request.contextPath}/message/list?pageNum=" + pageNum;
 
             // 添加搜索条件（如果有）
             var searchColumn = "${searchColumn}";
@@ -415,8 +380,8 @@
         }
 
         function confirmDelete(id, sortField, sortDirection) {
-            if (confirm('确定要删除此任务吗？')) {
-                var url = '${pageContext.request.contextPath}/task/delete?id=' + id + '&pageNum=${pageNum}';
+            if (confirm('确定要删除此消息吗？')) {
+                var url = '${pageContext.request.contextPath}/message/delete?id=' + id + '&pageNum=${pageNum}';
                 if (sortField && sortDirection) {
                     url += '&sortField=' + sortField + '&sortDirection=' + sortDirection;
                 }
@@ -424,11 +389,11 @@
             }
         }
 
-        function searchTasks() {
+        function searchMessages() {
             var searchColumn = document.getElementById("searchColumn").value;
             var keyword = document.getElementById("keyword").value;
 
-            window.location.href = "${pageContext.request.contextPath}/task/list?searchColumn=" + searchColumn +
+            window.location.href = "${pageContext.request.contextPath}/message/list?searchColumn=" + searchColumn +
                 "&keyword=" + keyword + "&sortField=" + currentSort.field + "&sortDirection=" + currentSort.direction;
         }
     </script>
@@ -462,12 +427,12 @@
                                     <td>
                                         <div class="search-box">
                                             <select id="searchColumn" name="searchColumn">
-                                                <option value="title" ${searchColumn == 'title' ? 'selected' : ''}>按任务标题</option>
-                                                <option value="creator" ${searchColumn == 'creator' ? 'selected' : ''}>按创建者</option>
-                                                <option value="executor" ${searchColumn == 'executor' ? 'selected' : ''}>按执行人</option>
+                                                <option value="title" ${searchColumn == 'title' ? 'selected' : ''}>按标题</option>
+                                                <option value="sender" ${searchColumn == 'sender' ? 'selected' : ''}>按发送人</option>
+                                                <option value="receiver" ${searchColumn == 'receiver' ? 'selected' : ''}>按接收人</option>
                                             </select>
                                             <input id="keyword" name="keyword" type="text" value="${keyword}" placeholder="请输入关键词" />
-                                            <button type="button" class="right-button02" onclick="searchTasks()">搜索</button>
+                                            <button type="button" class="right-button02" onclick="searchMessages()">搜索</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -489,71 +454,53 @@
                                                 <a href="#" class="right-font08" onclick="selectAll();">全选</a>-
                                                 <a href="#" class="right-font08" onclick="unselectAll();">反选</a>
                                             </span>
-                                        <input name="batchDeleteBtn" type="button" class="right-button08" value="删除所选任务" onclick="batchDelete();" />
-                                        <input name="addTaskBtn" type="button" class="right-button08" value="添加任务" onclick="addTask();" />
+                                        <input name="batchDeleteBtn" type="button" class="right-button08" value="删除所选消息" onclick="batchDelete();" />
+                                        <input name="addMessageBtn" type="button" class="right-button08" value="添加消息" onclick="addMessage();" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td height="40" class="font42">
                                         <table width="100%" border="0" cellpadding="4" cellspacing="1" bgcolor="#464646" class="newfont03">
                                             <tr class="CTitle">
-                                                <td height="22" colspan="7" align="center" style="font-size:16px">任务详细列表</td>
+                                                <td height="22" colspan="7" align="center" style="font-size:16px">消息详细列表</td>
                                             </tr>
                                             <tr bgcolor="#EEEEEE">
                                                 <td width="4%" align="center" height="30">选择</td>
-                                                <td width="20%" class="sortable title-sortable" onclick="sort('title')">任务标题</td>
-                                                <td width="15%">创建者</td>
-                                                <td width="15%">执行人</td>
-                                                <td width="10%">优先级</td>
-                                                <td width="10%">状态</td>
+                                                <td width="20%" class="sortable title-sortable" onclick="sort('title')">标题</td>
+                                                <td width="15%">发送人</td>
+                                                <td width="15%">接收人</td>
+                                                <td width="20%">发送时间</td>
+                                                <td width="8%">状态</td>
                                                 <td width="15%">操作</td>
                                             </tr>
                                             <c:choose>
                                                 <c:when test="${empty list}">
                                                     <tr bgcolor="#FFFFFF">
-                                                        <td colspan="7" align="center">暂无任务数据</td>
+                                                        <td colspan="7" align="center">暂无消息数据</td>
                                                     </tr>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <c:forEach items="${list}" var="task">
+                                                    <c:forEach items="${list}" var="message">
                                                         <tr bgcolor="#FFFFFF" class="bgcolor">
-                                                            <td height="20"><input type="checkbox" name="delid" value="${task.id}" /></td>
-                                                            <td>${task.title}</td>
-                                                            <td>${task.creator}</td>
-                                                            <td>${task.executor}</td>
+                                                            <td height="20"><input type="checkbox" name="delid" value="${message.id}" /></td>
+                                                            <td>${message.title}</td>
+                                                            <td>${message.sender}</td>
+                                                            <td>${message.receiver}</td>
+                                                            <td><fmt:formatDate value="${message.sendTime}" pattern="yyyy-MM-dd HH:mm" /></td>
                                                             <td>
                                                                 <c:choose>
-                                                                    <c:when test="${task.priority == '高'}">
-                                                                        <span class="priority-high">${task.priority}</span>
-                                                                    </c:when>
-                                                                    <c:when test="${task.priority == '中'}">
-                                                                        <span class="priority-medium">${task.priority}</span>
+                                                                    <c:when test="${message.status == 0}">
+                                                                        <span class="status-active">已读</span>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <span class="priority-low">${task.priority}</span>
+                                                                        <span class="status-inactive">未读</span>
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </td>
                                                             <td>
-                                                                <c:choose>
-                                                                    <c:when test="${task.status == '未开始'}">
-                                                                        <span class="status-not-started">${task.status}</span>
-                                                                    </c:when>
-                                                                    <c:when test="${task.status == '进行中'}">
-                                                                        <span class="status-in-progress">${task.status}</span>
-                                                                    </c:when>
-                                                                    <c:when test="${task.status == '已完成'}">
-                                                                        <span class="status-completed">${task.status}</span>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <span class="status-cancelled">${task.status}</span>
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </td>
-                                                            <td>
-                                                                <a href="${pageContext.request.contextPath}/task/toEdit?id=${task.id}&pageNum=${pageNum}">编辑</a> |
-                                                                <a href="${pageContext.request.contextPath}/task/info?id=${task.id}">详情</a> |
-                                                                <a href="javascript:void(0);" onclick="confirmDelete(${task.id}, '${sortField}', '${sortDirection}')">删除</a>
+                                                                <a href="${pageContext.request.contextPath}/message/toEdit?id=${message.id}&pageNum=${pageNum}">编辑</a> |
+                                                                <a href="${pageContext.request.contextPath}/message/info?id=${message.id}">详情</a> |
+                                                                <a href="javascript:void(0);" onclick="confirmDelete(${message.id}, '${sortField}', '${sortDirection}')">删除</a>
                                                             </td>
                                                         </tr>
                                                     </c:forEach>

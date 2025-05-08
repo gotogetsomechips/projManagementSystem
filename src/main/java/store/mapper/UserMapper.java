@@ -15,9 +15,7 @@ public interface UserMapper {
     int countByUsername(String username);
     List<User> selectAllOrderBy(String orderBy);
     User selectByUsername(String username);
-    List<Integer> getFixedOrderUserIds(@Param("condition") User condition, @Param("orderBy") String orderBy);
-    List<User> getUsersByIds(@Param("ids") List<Integer> ids);
-    int updateStatusByUsername(@Param("username") String username, @Param("status") String status);
+    void updateStatusByUsername(@Param("username") String username, @Param("status") String status);
     // 分页相关的方法
     List<User> selectAllWithPagination(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
     List<User> selectByConditionWithPagination(@Param("condition") User condition, 
@@ -29,4 +27,8 @@ public interface UserMapper {
 
     int countAll();
     int countByCondition(User condition);
+
+    List<User> getUsersByIds(@Param("ids") List<Integer> ids);
+
+    List<Integer> getFixedOrderUserIds(@Param("condition") User condition, @Param("orderBy") String orderBy);
 }

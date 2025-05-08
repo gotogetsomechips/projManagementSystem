@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>员工详情</title>
+    <title>薪资详情</title>
     <style type="text/css">
         body {
             margin: 0;
@@ -39,6 +39,14 @@
         .info-table td {
             background-color: #fff;
         }
+        .status-paid {
+            color: green;
+            font-weight: bold;
+        }
+        .status-unpaid {
+            color: red;
+            font-weight: bold;
+        }
         .button-group {
             margin-top: 20px;
             text-align: center;
@@ -64,56 +72,73 @@
 </head>
 <body>
 <div class="container">
-    <div class="info-title">员工详细信息</div>
+    <div class="info-title">薪资详细信息</div>
     <table class="info-table">
         <tr>
-            <th>员工编号</th>
-            <td>${vo.employeeId}</td>
-        </tr>
-        <tr>
             <th>员工姓名</th>
-            <td>${vo.realName}</td>
+            <td>${vo.employeeName}</td>
         </tr>
         <tr>
-            <th>职位</th>
-            <td>${vo.position}</td>
+            <th>年份</th>
+            <td>${vo.year}年</td>
         </tr>
         <tr>
-            <th>员工类型</th>
-            <td>${vo.employeeType}</td>
+            <th>月份</th>
+            <td>${vo.month}月</td>
         </tr>
         <tr>
-            <th>身份证号码</th>
-            <td>${vo.idCard}</td>
+            <th>基本工资</th>
+            <td><fmt:formatNumber value="${vo.baseSalary}" pattern="#,##0.00" /></td>
         </tr>
         <tr>
-            <th>性别</th>
-            <td>${vo.gender}</td>
+            <th>奖金</th>
+            <td><fmt:formatNumber value="${vo.bonus}" pattern="#,##0.00" /></td>
         </tr>
         <tr>
-            <th>年龄</th>
-            <td>${vo.age}</td>
+            <th>扣款</th>
+            <td><fmt:formatNumber value="${vo.deduction}" pattern="#,##0.00" /></td>
         </tr>
         <tr>
-            <th>出生年月</th>
-            <td><fmt:formatDate value="${vo.birthDate}" pattern="yyyy-MM-dd" /></td>
+            <th>应发工资</th>
+            <td><fmt:formatNumber value="${vo.totalSalary}" pattern="#,##0.00" /></td>
         </tr>
         <tr>
-            <th>联系电话</th>
-            <td>${vo.phone}</td>
+            <th>实发工资</th>
+            <td><fmt:formatNumber value="${vo.actualSalary}" pattern="#,##0.00" /></td>
+        </tr>
+        <tr>
+            <th>状态</th>
+            <td>
+                <c:choose>
+                    <c:when test="${vo.status == 1}">
+                        <span class="status-paid">已发放</span>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="status-unpaid">未发放</span>
+                    </c:otherwise>
+                </c:choose>
+            </td>
+        </tr>
+        <tr>
+            <th>发放人</th>
+            <td>${vo.paymentBy}</td>
+        </tr>
+        <tr>
+            <th>发放时间</th>
+            <td><fmt:formatDate value="${vo.paymentTime}" pattern="yyyy-MM-dd HH:mm" /></td>
+        </tr>
+        <tr>
+            <th>备注</th>
+            <td>${vo.remark}</td>
         </tr>
         <tr>
             <th>创建时间</th>
             <td><fmt:formatDate value="${vo.createTime}" pattern="yyyy-MM-dd HH:mm" /></td>
         </tr>
-        <tr>
-            <th>更新时间</th>
-            <td><fmt:formatDate value="${vo.updateTime}" pattern="yyyy-MM-dd HH:mm" /></td>
-        </tr>
     </table>
     <div class="button-group">
-        <a href="${pageContext.request.contextPath}/employee/toEdit?id=${vo.id}" class="button button-edit">编辑</a>
-        <a href="${pageContext.request.contextPath}/employee/list" class="button button-back">返回列表</a>
+        <a href="${pageContext.request.contextPath}/salary/toEdit?id=${vo.id}" class="button button-edit">编辑</a>
+        <a href="${pageContext.request.contextPath}/salary/list" class="button button-back">返回列表</a>
     </div>
 </div>
 </body>

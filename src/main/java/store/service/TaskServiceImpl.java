@@ -1,11 +1,14 @@
-package store.service.impl;
+package store.service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import store.bean.Task;
 import store.mapper.TaskMapper;
-import store.service.TaskService;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -86,5 +89,48 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public int countTasksByCondition(Task condition) {
         return taskMapper.countByCondition(condition);
+    }
+
+    @Override
+    public List<Integer> getFixedOrderTaskIds(Task condition, String orderBy) {
+        return taskMapper.getFixedOrderTaskIds(condition, "id DESC");
+    }
+
+    @Override
+    public List<Task> getTasksByIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return taskMapper.getTasksByIds(ids);
+    }
+
+    @Override
+    public List<Task> sortCurrentPage(List<Task> taskList, String sortField, String sortDirection) {
+        Comparator<Task> comparator = getComparator(sortField);
+
+        if ("DESC".equalsIgnoreCase(sortDirection)) {
+            comparator = comparator.reversed();
+        }
+
+        return taskList.stream()
+                .sorted(comparator)
+                .collect(Collectors.toList());
+    }
+
+    private Comparator<Task> getComparator(String sortField) {
+        switch(sortField) {
+            case "title":
+                return Comparator.comparing(Task::getTitle);
+            case "creator":
+                return Comparator.comparing(Task::getCreator);
+            case "executor":
+                return Comparator.comparing(Task::getExecutor);
+            case "priority":
+                return Comparator.comparing(Task::getPriority);
+            case "status":
+                return Comparator.comparing(Task::getStatus);
+            default:
+                return Comparator.comparing(Task::getId);
+        }
     }
 }

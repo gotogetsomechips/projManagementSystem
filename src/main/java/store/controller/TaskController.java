@@ -1,6 +1,8 @@
 package store.controller;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +21,6 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    // 每页显示的记录数
     private static final int PAGE_SIZE = 10;
 
     @RequestMapping("/list")
@@ -31,7 +32,6 @@ public class TaskController {
                        @RequestParam(value = "sortDirection", required = false) String sortDirection,
                        @RequestParam(value = "message", required = false) String message) {
 
-        // 添加消息处理
         if (message != null) {
             switch (message) {
                 case "add_success":
@@ -49,69 +49,50 @@ public class TaskController {
             }
         }
 
-        // 确保页码不小于1
         if (pageNum < 1) {
             pageNum = 1;
         }
 
-        // 创建查询条件
         Task condition = new Task();
         if (searchColumn != null && keyword != null && !keyword.isEmpty()) {
             if ("title".equals(searchColumn)) {
                 condition.setTitle(keyword);
             } else if ("creator".equals(searchColumn)) {
                 condition.setCreator(keyword);
-            } else if ("assignee".equals(searchColumn)) {
-                condition.setAssignee(keyword);
+            } else if ("executor".equals(searchColumn)) {
+                condition.setExecutor(keyword);
             }
         }
 
-        // 获取总记录数用于分页
         int totalCount;
-        if (condition.getTitle() != null || condition.getCreator() != null || condition.getAssignee() != null) {
+        if (condition.getTitle() != null || condition.getCreator() != null || condition.getExecutor() != null) {
             totalCount = taskService.countTasksByCondition(condition);
         } else {
             totalCount = taskService.countAllTasks();
         }
 
-        // 计算总页数
         int totalPages = (totalCount + PAGE_SIZE - 1) / PAGE_SIZE;
 
-        // 确保页码不超过总页数
         if (totalPages > 0 && pageNum > totalPages) {
             pageNum = totalPages;
         }
 
-        // 计算分页起始索引
+        List<Integer> fixedOrderIds = taskService.getFixedOrderTaskIds(condition, "id DESC");
+
         int startIndex = (pageNum - 1) * PAGE_SIZE;
+        int endIndex = Math.min(startIndex + PAGE_SIZE, fixedOrderIds.size());
+        List<Integer> pageIds = fixedOrderIds.subList(startIndex, endIndex);
+        List<Task> taskList = taskService.getTasksByIds(pageIds);
 
-        // 获取数据时使用排序参数
-        List<Task> taskList;
-        String orderBy = null;
         if (sortField != null && !sortField.isEmpty() && sortDirection != null && !sortDirection.isEmpty()) {
-            orderBy = sortField + " " + sortDirection;
+            taskList = taskService.sortCurrentPage(taskList, sortField, sortDirection);
         }
 
-        if (condition.getTitle() != null || condition.getCreator() != null || condition.getAssignee() != null) {
-            if (orderBy != null) {
-                taskList = taskService.getTasksByConditionOrderByWithPagination(condition, orderBy, startIndex, PAGE_SIZE);
-            } else {
-                taskList = taskService.getTasksByConditionWithPagination(condition, startIndex, PAGE_SIZE);
-            }
-        } else {
-            if (orderBy != null) {
-                taskList = taskService.getAllTasksOrderByWithPagination(orderBy, startIndex, PAGE_SIZE);
-            } else {
-                taskList = taskService.getAllTasksWithPagination(startIndex, PAGE_SIZE);
-            }
-        }
-        // 设置分页相关属性
         model.addAttribute("list", taskList);
         model.addAttribute("pageNum", pageNum);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalCount", totalCount);
 
-        // 保留搜索条件和排序条件
         model.addAttribute("searchColumn", searchColumn);
         model.addAttribute("keyword", keyword);
         model.addAttribute("sortField", sortField);
@@ -124,28 +105,43 @@ public class TaskController {
     public String add(Task task, HttpServletRequest request,
                       @RequestParam(value = "sortField", required = false) String sortField,
                       @RequestParam(value = "sortDirection", required = false) String sortDirection) {
-        // 验证任务标题
         if (task.getTitle() == null || task.getTitle().isEmpty()) {
             request.setAttribute("error", "任务标题不能为空");
             return "task_add";
         }
 
-        // 验证任务标题是否存在
         if (taskService.isTitleExist(task.getTitle())) {
             request.setAttribute("error", "任务标题已存在");
             return "task_add";
         }
 
-        // 验证执行人
-        if (task.getAssignee() == null || task.getAssignee().isEmpty()) {
+        if (task.getContent() == null || task.getContent().isEmpty()) {
+            request.setAttribute("error", "任务内容不能为空");
+            return "task_add";
+        }
+
+        if (task.getCreator() == null || task.getCreator().isEmpty()) {
+            request.setAttribute("error", "创建者不能为空");
+            return "task_add";
+        }
+
+        if (task.getExecutor() == null || task.getExecutor().isEmpty()) {
             request.setAttribute("error", "执行人不能为空");
             return "task_add";
         }
 
-        task.setCreateBy("admin"); // 实际应该从session获取当前登录用户
+        if (task.getPriority() == null || task.getPriority().isEmpty()) {
+            request.setAttribute("error", "优先级不能为空");
+            return "task_add";
+        }
+
+        if (task.getStatus() == null || task.getStatus().isEmpty()) {
+            request.setAttribute("error", "状态不能为空");
+            return "task_add";
+        }
+
         int result = taskService.addTask(task);
         if (result > 0) {
-            // 添加成功，设置成功消息并保留排序参数
             String redirectUrl = "redirect:/task/list?message=add_success";
             if (sortField != null && sortDirection != null) {
                 redirectUrl += "&sortField=" + sortField + "&sortDirection=" + sortDirection;
@@ -162,19 +158,15 @@ public class TaskController {
                        @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                        @RequestParam(value = "sortField", required = false) String sortField,
                        @RequestParam(value = "sortDirection", required = false) String sortDirection) {
-        // 验证任务标题
         if (task.getTitle() == null || task.getTitle().isEmpty()) {
             request.setAttribute("error", "任务标题不能为空");
-            // 重新获取任务信息
             Task originalTask = taskService.getTaskById(task.getId());
             request.setAttribute("vo", originalTask);
             return "task_edit";
         }
 
-        // 获取原始任务数据
         Task originalTask = taskService.getTaskById(task.getId());
 
-        // 检查任务标题是否已被修改，如果修改了，需要检查唯一性
         if (!task.getTitle().equals(originalTask.getTitle())) {
             if (taskService.isTitleExist(task.getTitle())) {
                 request.setAttribute("error", "任务标题已存在");
@@ -183,18 +175,16 @@ public class TaskController {
             }
         }
 
-        // 验证执行人
-        if (task.getAssignee() == null || task.getAssignee().isEmpty()) {
-            request.setAttribute("error", "执行人不能为空");
+        if (task.getContent() == null || task.getContent().isEmpty()) {
+            request.setAttribute("error", "任务内容不能为空");
             request.setAttribute("vo", originalTask);
             return "task_edit";
         }
 
-        // 检查是否有实际修改
         boolean hasChanged = !task.getTitle().equals(originalTask.getTitle()) ||
-                !task.getDescription().equals(originalTask.getDescription()) ||
+                !task.getContent().equals(originalTask.getContent()) ||
                 !task.getCreator().equals(originalTask.getCreator()) ||
-                !task.getAssignee().equals(originalTask.getAssignee()) ||
+                !task.getExecutor().equals(originalTask.getExecutor()) ||
                 !task.getPriority().equals(originalTask.getPriority()) ||
                 !task.getStatus().equals(originalTask.getStatus());
 

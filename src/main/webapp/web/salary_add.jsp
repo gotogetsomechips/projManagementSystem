@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title>添加薪资记录</title>
+  <title>添加薪资</title>
   <style type="text/css">
     body {
       margin: 0;
@@ -118,17 +118,36 @@
       border-radius: 3px;
       cursor: pointer;
     }
+    /* 校验提示样式 */
+    .validation-message {
+      font-size: 12px;
+      margin-top: 5px;
+      height: 18px;
+    }
+    .error {
+      color: #f44336;
+    }
+    .success {
+      color: #4CAF50;
+    }
+    .required-field::after {
+      content: " *";
+      color: red;
+    }
+    .error-input {
+      border-color: #f44336 !important;
+    }
   </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    function showErrorModal(message) {
-      var modal = document.getElementById("errorModal");
-      var errorMessage = document.getElementById("errorMessage");
-      errorMessage.textContent = message;
-      modal.style.display = "block";
-    }
-
     $(document).ready(function() {
+      function showErrorModal(message) {
+        var modal = document.getElementById("errorModal");
+        var errorMessage = document.getElementById("errorMessage");
+        errorMessage.textContent = message;
+        modal.style.display = "block";
+      }
+
       // 关闭弹窗
       $(".btn-close").click(function() {
         $("#errorModal").hide();
@@ -148,23 +167,176 @@
         showErrorModal(error);
       }
 
-      // 自动计算总工资和实发工资
-      $("#baseSalary, #bonus, #deduction").on('input', function() {
-        calculateSalaries();
+      // 员工ID校验
+      $("#employeeId").on("blur", function() {
+        var employeeId = $(this).val();
+        var $message = $(this).next(".validation-message");
+
+        if (!employeeId) {
+          $(this).addClass("error-input");
+          $message.text("员工ID不能为空").removeClass("success").addClass("error");
+        } else if (!/^\d+$/.test(employeeId)) {
+          $(this).addClass("error-input");
+          $message.text("员工ID必须为数字").removeClass("success").addClass("error");
+        } else {
+          $(this).removeClass("error-input");
+          $message.text("").removeClass("error").removeClass("success");
+        }
+      });
+
+      // 员工姓名校验
+      $("#employeeName").on("blur", function() {
+        var employeeName = $(this).val();
+        var $message = $(this).next(".validation-message");
+
+        if (!employeeName) {
+          $(this).addClass("error-input");
+          $message.text("员工姓名不能为空").removeClass("success").addClass("error");
+          return;
+        }
+
+        // 检查员工是否存在
+        $.post("${pageContext.request.contextPath}/salary/checkEmployee",
+                {employeeName: employeeName},
+                function(data) {
+                  if (data === "true") {
+                    $(this).addClass("error-input");
+                    $message.text("员工已存在").removeClass("success").addClass("error");
+                  } else {
+                    $(this).removeClass("error-input");
+                    $message.text("员工可用").removeClass("error").addClass("success");
+                  }
+                }.bind(this)
+        );
+      });
+
+      // 年份校验
+      $("#year").on("blur", function() {
+        var year = $(this).val();
+        var $message = $(this).next(".validation-message");
+
+        if (!year) {
+          $(this).addClass("error-input");
+          $message.text("年份不能为空").removeClass("success").addClass("error");
+        } else if (year < 2000 || year > 2100) {
+          $(this).addClass("error-input");
+          $message.text("年份必须在2000-2100之间").removeClass("success").addClass("error");
+        } else {
+          $(this).removeClass("error-input");
+          $message.text("").removeClass("error").removeClass("success");
+        }
+      });
+
+      // 月份校验
+      $("#month").on("blur", function() {
+        var month = $(this).val();
+        var $message = $(this).next(".validation-message");
+
+        if (!month) {
+          $(this).addClass("error-input");
+          $message.text("月份不能为空").removeClass("success").addClass("error");
+        } else if (month < 1 || month > 12) {
+          $(this).addClass("error-input");
+          $message.text("月份必须在1-12之间").removeClass("success").addClass("error");
+        } else {
+          $(this).removeClass("error-input");
+          $message.text("").removeClass("error").removeClass("success");
+        }
+      });
+
+      // 基本工资校验
+      $("#baseSalary").on("blur", function() {
+        var baseSalary = $(this).val();
+        var $message = $(this).next(".validation-message");
+
+        if (!baseSalary) {
+          $(this).addClass("error-input");
+          $message.text("基本工资不能为空").removeClass("success").addClass("error");
+        } else if (isNaN(baseSalary) || parseFloat(baseSalary) <= 0) {
+          $(this).addClass("error-input");
+          $message.text("基本工资必须大于0").removeClass("success").addClass("error");
+        } else {
+          $(this).removeClass("error-input");
+          $message.text("").removeClass("error").removeClass("success");
+        }
+      });
+
+      // 奖金校验
+      $("#bonus").on("blur", function() {
+        var bonus = $(this).val();
+        var $message = $(this).next(".validation-message");
+
+        if (bonus && (isNaN(bonus) || parseFloat(bonus) < 0)) {
+          $(this).addClass("error-input");
+          $message.text("奖金不能为负数").removeClass("success").addClass("error");
+        } else {
+          $(this).removeClass("error-input");
+          $message.text("").removeClass("error").removeClass("success");
+        }
+      });
+
+      // 扣款校验
+      $("#deduction").on("blur", function() {
+        var deduction = $(this).val();
+        var $message = $(this).next(".validation-message");
+
+        if (deduction && (isNaN(deduction) || parseFloat(deduction) < 0)) {
+          $(this).addClass("error-input");
+          $message.text("扣款不能为负数").removeClass("success").addClass("error");
+        } else {
+          $(this).removeClass("error-input");
+          $message.text("").removeClass("error").removeClass("success");
+        }
+      });
+
+      // 发放人校验
+      $("#paymentBy").on("blur", function() {
+        var paymentBy = $(this).val();
+        var $message = $(this).next(".validation-message");
+
+        if (!paymentBy) {
+          $(this).addClass("error-input");
+          $message.text("发放人不能为空").removeClass("success").addClass("error");
+        } else {
+          $(this).removeClass("error-input");
+          $message.text("").removeClass("error").removeClass("success");
+        }
+      });
+
+      // 表单提交验证
+      $("form").submit(function(e) {
+        var isValid = true;
+        var errorMsg = "";
+
+        // 触发所有必填字段的blur事件以确保验证
+        $("[required]").trigger("blur");
+
+        // 检查是否有错误
+        $("[required]").each(function() {
+          var $message = $(this).next(".validation-message");
+          if ($message.hasClass("error") || $(this).hasClass("error-input")) {
+            isValid = false;
+            var fieldName = $(this).prev("label").text().replace("*", "").trim();
+            errorMsg += fieldName + "验证失败\n";
+          }
+        });
+
+        // 检查员工是否存在
+        var employeeCheck = $("#employeeName").next(".validation-message").hasClass("error");
+        if (employeeCheck) {
+          errorMsg += "员工已存在\n";
+          isValid = false;
+        }
+
+        if (!isValid) {
+          showErrorModal(errorMsg);
+          e.preventDefault();
+          return false;
+        }
+
+        return true;
       });
     });
-
-    function calculateSalaries() {
-      var baseSalary = parseFloat($("#baseSalary").val()) || 0;
-      var bonus = parseFloat($("#bonus").val()) || 0;
-      var deduction = parseFloat($("#deduction").val()) || 0;
-
-      var totalSalary = baseSalary + bonus;
-      var actualSalary = totalSalary - deduction;
-
-      $("#totalSalary").val(totalSalary.toFixed(2));
-      $("#actualSalary").val(actualSalary.toFixed(2));
-    }
   </script>
 </head>
 <body>
@@ -188,70 +360,55 @@
 
   <form action="${pageContext.request.contextPath}/salary/add?sortField=${param.sortField}&sortDirection=${param.sortDirection}" method="post">
     <div class="form-group">
-      <label for="employeeName">员工姓名</label>
+      <label for="employeeName" class="required-field">员工姓名</label>
       <input type="text" id="employeeName" name="employeeName" class="form-control" required />
+      <div class="validation-message"></div>
     </div>
 
     <div class="form-group">
-      <label for="year">年份</label>
-      <select id="year" name="year" class="form-control" required>
-        <option value="">请选择年份</option>
-        <c:forEach var="i" begin="2020" end="2030">
-          <option value="${i}">${i}年</option>
-        </c:forEach>
-      </select>
+      <label for="year" class="required-field">年份</label>
+      <input type="number" id="year" name="year" class="form-control" min="2000" max="2100" required />
+      <div class="validation-message"></div>
     </div>
 
     <div class="form-group">
-      <label for="month">月份</label>
-      <select id="month" name="month" class="form-control" required>
-        <option value="">请选择月份</option>
-        <c:forEach var="i" begin="1" end="12">
-          <option value="${i}">${i}月</option>
-        </c:forEach>
-      </select>
+      <label for="month" class="required-field">月份</label>
+      <input type="number" id="month" name="month" class="form-control" min="1" max="12" required />
+      <div class="validation-message"></div>
     </div>
 
     <div class="form-group">
-      <label for="baseSalary">基本工资</label>
-      <input type="number" id="baseSalary" name="baseSalary" class="form-control" step="0.01" min="0" required />
+      <label for="baseSalary" class="required-field">基本工资</label>
+      <input type="number" id="baseSalary" name="baseSalary" class="form-control" min="0" step="0.01" required />
+      <div class="validation-message"></div>
     </div>
 
     <div class="form-group">
-      <label for="bonus">奖金</label>
-      <input type="number" id="bonus" name="bonus" class="form-control" step="0.01" min="0" value="0" />
+      <label for="bonus" class="required-field">奖金</label>
+      <input type="number" id="bonus" name="bonus" class="form-control" min="0" step="0.01" value="0" required />
+      <div class="validation-message"></div>
     </div>
 
     <div class="form-group">
-      <label for="deduction">扣除金额</label>
-      <input type="number" id="deduction" name="deduction" class="form-control" step="0.01" min="0" value="0" />
+      <label for="deduction" class="required-field">扣款</label>
+      <input type="number" id="deduction" name="deduction" class="form-control" min="0" step="0.01" value="0" required />
+      <div class="validation-message"></div>
     </div>
 
     <div class="form-group">
-      <label for="totalSalary">总工资</label>
-      <input type="number" id="totalSalary" name="totalSalary" class="form-control" step="0.01" min="0" readonly />
+      <label for="paymentBy" class="required-field">发放人</label>
+      <input type="text" id="paymentBy" name="paymentBy" class="form-control" required />
+      <div class="validation-message"></div>
     </div>
 
     <div class="form-group">
-      <label for="actualSalary">实发工资</label>
-      <input type="number" id="actualSalary" name="actualSalary" class="form-control" step="0.01" min="0" readonly />
-    </div>
-
-    <div class="form-group">
-      <label for="status">状态</label>
-      <select id="status" name="status" class="form-control">
-        <option value="0" selected>未发放</option>
-        <option value="1">已发放</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="payer">发放人</label>
-      <input type="text" id="payer" name="payer" class="form-control" />
+      <label for="remark">备注</label> <!-- 移除了required-field类 -->
+      <textarea id="remark" name="remark" class="form-control"></textarea>
+      <div class="validation-message"></div>
     </div>
 
     <div class="button-group">
-      <button type="submit" class="button button-submit">添加</button>
+      <button type="submit" class="button button-submit">保存</button>
       <a href="${pageContext.request.contextPath}/salary/list" class="button button-cancel">取消</a>
     </div>
   </form>

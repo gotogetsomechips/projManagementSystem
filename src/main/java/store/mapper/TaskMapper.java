@@ -14,12 +14,17 @@ public interface TaskMapper {
     List<Task> selectByCondition(Task condition);
     int countByTitle(String title);
     List<Task> selectAllOrderBy(String orderBy);
+    List<Integer> getFixedOrderTaskIds(@Param("condition") Task condition, @Param("orderBy") String orderBy);
+    List<Task> getTasksByIds(@Param("ids") List<Integer> ids);
 
     // 分页相关的方法
     List<Task> selectAllWithPagination(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
-    List<Task> selectByConditionWithPagination(@Param("condition") Task condition, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
-    List<Task> selectAllOrderByWithPagination(@Param("orderBy") String orderBy, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
-    List<Task> selectByConditionOrderByWithPagination(@Param("condition") Task condition, @Param("orderBy") String orderBy, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
+    List<Task> selectByConditionWithPagination(@Param("condition") Task condition,
+                                               @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
+    List<Task> selectAllOrderByWithPagination(@Param("orderBy") String orderBy,
+                                              @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
+    List<Task> selectByConditionOrderByWithPagination(@Param("condition") Task condition,
+                                                      @Param("orderBy") String orderBy, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
 
     int countAll();
     int countByCondition(Task condition);

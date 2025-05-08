@@ -17,6 +17,11 @@
       color: red;
       font-size: 12px;
     }
+    .register-link {
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
     -->
   </style>
   <link href="css/css.css" rel="stylesheet" type="text/css" />
@@ -78,12 +83,18 @@
             <td height="35">&nbsp;</td>
             <td>
               <input type="submit" class="right-button01" value="确认登陆" />
-              <input type="reset" class="right-button02" value="重 置" />
+              <input type="button" class="right-button02" value="注册" onclick="location.href='<c:url value="/register"/>'" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" align="center" style="padding-top: 10px;">
+              还没有账号？<span class="register-link" onclick="location.href='<c:url value="/register"/>'">立即注册</span>
             </td>
           </tr>
         </table>
       </form>
     </td>
+
   </tr>
 </table>
 
@@ -92,6 +103,22 @@
     var captchaImage = document.getElementById('captchaImage');
     captchaImage.src = '<c:url value="/captcha"/>?t=' + new Date().getTime();
   }
+  // 页面加载时检查是否有注册成功参数
+  window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const registerSuccess = urlParams.get('registerSuccess');
+    if(registerSuccess === 'true') {
+      alert("注册成功，请登录！");
+      //移除URL中的参数，避免刷新页面时再次显示提示
+      if(window.history && window.history.replaceState) {
+        const cleanUrl = window.location.protocol + "//" +
+                window.location.host +
+                window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  }
+</script>
 </script>
 </body>
 </html>

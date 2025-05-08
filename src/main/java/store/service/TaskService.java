@@ -20,6 +20,10 @@ public interface TaskService {
     List<Task> getAllTasksOrderByWithPagination(String orderBy, int startIndex, int pageSize);
     List<Task> getTasksByConditionOrderByWithPagination(Task condition, String orderBy, int startIndex, int pageSize);
 
+    List<Integer> getFixedOrderTaskIds(Task condition, String orderBy);
+    List<Task> getTasksByIds(List<Integer> ids);
     int countAllTasks();
     int countTasksByCondition(Task condition);
+
+    List<Task> sortCurrentPage(List<Task> taskList, String sortField, String sortDirection);
 }

@@ -16,6 +16,7 @@ public interface UserService {
     User login(String username, String password);
     void lockUser(String username);
     void unlockUser(String username);
+    User getUserByUsername(String username);
     // 分页相关的方法
     List<User> getAllUsersWithPagination(int startIndex, int pageSize);
     List<User> getUsersByConditionWithPagination(User condition, int startIndex, int pageSize);

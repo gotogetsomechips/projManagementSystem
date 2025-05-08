@@ -205,4 +205,15 @@
         </foreach>
         )
     </select>
+    <select id="selectByUsername" parameterType="string" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_user
+        WHERE username = #{username}
+    </select>
+    <update id="updateStatusByUsername">
+        UPDATE sys_user
+        SET status = #{status},
+            update_time = NOW()
+        WHERE username = #{username}
+    </update>
 </mapper>

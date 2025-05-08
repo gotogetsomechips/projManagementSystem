@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>添加任务</title>
+    <title>编辑消息</title>
     <style type="text/css">
         body {
             margin: 0;
@@ -134,6 +134,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
+            $("#errorModal").hide();
             function showErrorModal(message) {
                 var modal = document.getElementById("errorModal");
                 var errorMessage = document.getElementById("errorMessage");
@@ -159,89 +160,70 @@
             if (error && error.trim() !== "") {
                 showErrorModal(error);
             }
-
-            // 任务标题异步校验
+            // 标题校验
             $("#title").on("blur", function() {
                 var title = $(this).val();
+                var originalTitle = "${vo.title}";
                 var $message = $(this).next(".validation-message");
 
                 if (!title) {
-                    $message.text("任务标题不能为空").removeClass("success").addClass("error");
+                    $message.text("标题不能为空").removeClass("success").addClass("error");
                     return;
                 }
 
-                // 检查任务标题是否已存在
-                $.post("${pageContext.request.contextPath}/task/checkTitle", {title: title}, function(data) {
-                    if (data === "false") {
-                        $message.text("任务标题已存在").removeClass("success").addClass("error");
-                    } else {
-                        $message.text("任务标题可用").removeClass("error").addClass("success");
-                    }
-                });
+                // 如果标题有修改才检查是否已存在
+                if (title !== originalTitle) {
+                    $.post("${pageContext.request.contextPath}/message/checkTitle", {title: title}, function(data) {
+                        if (data.exists) {
+                            $message.text("标题已存在").removeClass("success").addClass("error");
+                        } else {
+                            $message.text("标题可用").removeClass("error").addClass("success");
+                        }
+                    }).fail(function() {
+                        $message.text("验证失败，请重试").removeClass("success").addClass("error");
+                    });
+                } else {
+                    $message.text("").removeClass("error").removeClass("success");
+                }
             });
 
-            // 任务内容校验
+            // 发送人校验
+            $("#sender").on("blur", function() {
+                var sender = $(this).val();
+                var $message = $(this).next(".validation-message");
+
+                if (!sender) {
+                    $message.text("发送人不能为空").removeClass("success").addClass("error");
+                } else {
+                    $message.text("").removeClass("error").removeClass("success");
+                }
+            });
+
+            // 接收人校验
+            $("#receiver").on("blur", function() {
+                var receiver = $(this).val();
+                var $message = $(this).next(".validation-message");
+
+                if (!receiver) {
+                    $message.text("接收人不能为空").removeClass("success").addClass("error");
+                } else {
+                    $message.text("").removeClass("error").removeClass("success");
+                }
+            });
+
+            // 内容校验
             $("#content").on("blur", function() {
                 var content = $(this).val();
                 var $message = $(this).next(".validation-message");
 
                 if (!content) {
-                    $message.text("任务内容不能为空").removeClass("success").addClass("error");
-                } else {
-                    $message.text("").removeClass("error").removeClass("success");
-                }
-            });
-
-            // 创建者校验
-            $("#creator").on("blur", function() {
-                var creator = $(this).val();
-                var $message = $(this).next(".validation-message");
-
-                if (!creator) {
-                    $message.text("创建者不能为空").removeClass("success").addClass("error");
-                } else {
-                    $message.text("").removeClass("error").removeClass("success");
-                }
-            });
-
-            // 执行人校验
-            $("#executor").on("blur", function() {
-                var executor = $(this).val();
-                var $message = $(this).next(".validation-message");
-
-                if (!executor) {
-                    $message.text("执行人不能为空").removeClass("success").addClass("error");
-                } else {
-                    $message.text("").removeClass("error").removeClass("success");
-                }
-            });
-
-            // 优先级校验
-            $("#priority").on("change", function() {
-                var priority = $(this).val();
-                var $message = $(this).next(".validation-message");
-
-                if (!priority) {
-                    $message.text("请选择优先级").removeClass("success").addClass("error");
-                } else {
-                    $message.text("").removeClass("error").removeClass("success");
-                }
-            });
-
-            // 状态校验
-            $("#status").on("change", function() {
-                var status = $(this).val();
-                var $message = $(this).next(".validation-message");
-
-                if (!status) {
-                    $message.text("请选择状态").removeClass("success").addClass("error");
+                    $message.text("消息内容不能为空").removeClass("success").addClass("error");
                 } else {
                     $message.text("").removeClass("error").removeClass("success");
                 }
             });
 
             // 表单提交验证
-// 表单提交验证
             $("form").submit(function(e) {
                 var isValid = true;
                 var errorMsg = "";
@@ -255,6 +237,16 @@
                         $(this).next(".validation-message").text(fieldName + "不能为空").removeClass("success").addClass("error");
                     }
                 });
+
+                // 检查标题是否重复
+                var title = $("#title").val();
+                var originalTitle = "${vo.title}";
+                var titleValidation = $("#title").next(".validation-message").text();
+
+                if (title && title !== originalTitle && titleValidation === "标题已存在") {
+                    errorMsg += "标题已存在，请修改\n";
+                    isValid = false;
+                }
 
                 if (!isValid) {
                     showErrorModal(errorMsg);
@@ -284,59 +276,39 @@
 </div>
 
 <div class="container">
-    <div class="form-title">添加新任务</div>
+    <div class="form-title">编辑消息</div>
 
-    <form action="${pageContext.request.contextPath}/task/add?sortField=${param.sortField}&sortDirection=${param.sortDirection}" method="post">
+    <form action="${pageContext.request.contextPath}/message/edit?sortField=${param.sortField}&sortDirection=${param.sortDirection}" method="post">
+        <input type="hidden" name="id" value="${vo.id}" />
+        <input type="hidden" name="pageNum" value="${pageNum}" />
+
         <div class="form-group">
-            <label for="title">任务标题 <span style="color:red;">*</span></label>
-            <input type="text" id="title" name="title" class="form-control" required />
+            <label for="title">标题 <span style="color:red;">*</span></label>
+            <input type="text" id="title" name="title" class="form-control" value="${vo.title}" required />
             <div class="validation-message"></div>
         </div>
 
         <div class="form-group">
-            <label for="content">任务内容 <span style="color:red;">*</span></label>
-            <textarea id="content" name="content" class="form-control" required></textarea>
+            <label for="sender">发送人 <span style="color:red;">*</span></label>
+            <input type="text" id="sender" name="sender" class="form-control" value="${vo.sender}" required />
             <div class="validation-message"></div>
         </div>
 
         <div class="form-group">
-            <label for="creator">创建者 <span style="color:red;">*</span></label>
-            <input type="text" id="creator" name="creator" class="form-control" required />
+            <label for="receiver">接收人 <span style="color:red;">*</span></label>
+            <input type="text" id="receiver" name="receiver" class="form-control" value="${vo.receiver}" required />
             <div class="validation-message"></div>
         </div>
 
         <div class="form-group">
-            <label for="executor">执行人 <span style="color:red;">*</span></label>
-            <input type="text" id="executor" name="executor" class="form-control" required />
-            <div class="validation-message"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="priority">优先级 <span style="color:red;">*</span></label>
-            <select id="priority" name="priority" class="form-control" required>
-                <option value="">--请选择--</option>
-                <option value="高">高</option>
-                <option value="中">中</option>
-                <option value="低">低</option>
-            </select>
-            <div class="validation-message"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="status">状态 <span style="color:red;">*</span></label>
-            <select id="status" name="status" class="form-control" required>
-                <option value="">--请选择--</option>
-                <option value="未开始">未开始</option>
-                <option value="进行中">进行中</option>
-                <option value="已完成">已完成</option>
-                <option value="已取消">已取消</option>
-            </select>
+            <label for="content">消息内容 <span style="color:red;">*</span></label>
+            <textarea id="content" name="content" class="form-control" required>${vo.content}</textarea>
             <div class="validation-message"></div>
         </div>
 
         <div class="button-group">
-            <button type="submit" class="button button-submit">添加</button>
-            <a href="${pageContext.request.contextPath}/task/list" class="button button-cancel">取消</a>
+            <button type="submit" class="button button-submit">保存</button>
+            <a href="${pageContext.request.contextPath}/message/list?pageNum=${pageNum}" class="button button-cancel">取消</a>
         </div>
     </form>
 </div>

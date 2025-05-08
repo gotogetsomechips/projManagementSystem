@@ -5,15 +5,12 @@ import java.util.Date;
 public class Task {
     private Integer id;
     private String title;
-    private String description;
-    private String creator;
-    private String assignee;
-    private String priority;
-    private Integer status;
+    private String content;
     private Date createTime;
-    private Date updateTime;
-    private String createBy;
-    private String updateBy;
+    private String creator;
+    private String executor;
+    private String priority; // 高、中、低
+    private String status;   // 未开始、进行中、已完成、已取消
 
     // getters and setters
     public Integer getId() {
@@ -28,35 +25,11 @@ public class Task {
     public void setTitle(String title) {
         this.title = title;
     }
-    public String getDescription() {
-        return description;
+    public String getContent() {
+        return content;
     }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public String getCreator() {
-        return creator;
-    }
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-    public String getAssignee() {
-        return assignee;
-    }
-    public void setAssignee(String assignee) {
-        this.assignee = assignee;
-    }
-    public String getPriority() {
-        return priority;
-    }
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-    public Integer getStatus() {
-        return status;
-    }
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setContent(String content) {
+        this.content = content;
     }
     public Date getCreateTime() {
         return createTime;
@@ -64,22 +37,28 @@ public class Task {
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
-    public Date getUpdateTime() {
-        return updateTime;
+    public String getCreator() {
+        return creator;
     }
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
-    public String getCreateBy() {
-        return createBy;
+    public String getExecutor() {
+        return executor;
     }
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
+    public void setExecutor(String executor) {
+        this.executor = executor;
     }
-    public String getUpdateBy() {
-        return updateBy;
+    public String getPriority() {
+        return priority;
     }
-    public void setUpdateBy(String updateBy) {
-        this.updateBy = updateBy;
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

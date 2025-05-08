@@ -51,14 +51,17 @@
             color: green;
             font-weight: bold;
         }
-        .status-pending {
-            color: blue;
+        .status-not-started {
+            color: #666;
         }
-        .status-inprogress {
-            color: orange;
+        .status-in-progress {
+            color: #1E90FF;
         }
         .status-completed {
             color: green;
+        }
+        .status-cancelled {
+            color: red;
         }
         .button-group {
             margin-top: 20px;
@@ -92,33 +95,33 @@
             <td>${vo.title}</td>
         </tr>
         <tr>
-            <th>任务描述</th>
-            <td>${vo.description}</td>
+            <th>任务内容</th>
+            <td>${vo.content}</td>
         </tr>
         <tr>
             <th>创建时间</th>
             <td><fmt:formatDate value="${vo.createTime}" pattern="yyyy-MM-dd HH:mm" /></td>
         </tr>
         <tr>
-            <th>发送者</th>
+            <th>创建者</th>
             <td>${vo.creator}</td>
         </tr>
         <tr>
             <th>执行人</th>
-            <td>${vo.assignee}</td>
+            <td>${vo.executor}</td>
         </tr>
         <tr>
             <th>优先级</th>
             <td>
                 <c:choose>
-                    <c:when test="${vo.priority eq 'high'}">
-                        <span class="priority-high">紧急</span>
+                    <c:when test="${vo.priority == '高'}">
+                        <span class="priority-high">${vo.priority}</span>
                     </c:when>
-                    <c:when test="${vo.priority eq 'medium'}">
-                        <span class="priority-medium">中等</span>
+                    <c:when test="${vo.priority == '中'}">
+                        <span class="priority-medium">${vo.priority}</span>
                     </c:when>
                     <c:otherwise>
-                        <span class="priority-low">普通</span>
+                        <span class="priority-low">${vo.priority}</span>
                     </c:otherwise>
                 </c:choose>
             </td>
@@ -127,17 +130,17 @@
             <th>状态</th>
             <td>
                 <c:choose>
-                    <c:when test="${vo.status == 0}">
-                        <span class="status-pending">待处理</span>
+                    <c:when test="${vo.status == '未开始'}">
+                        <span class="status-not-started">${vo.status}</span>
                     </c:when>
-                    <c:when test="${vo.status == 1}">
-                        <span class="status-inprogress">进行中</span>
+                    <c:when test="${vo.status == '进行中'}">
+                        <span class="status-in-progress">${vo.status}</span>
                     </c:when>
-                    <c:when test="${vo.status == 2}">
-                        <span class="status-completed">已完成</span>
+                    <c:when test="${vo.status == '已完成'}">
+                        <span class="status-completed">${vo.status}</span>
                     </c:when>
                     <c:otherwise>
-                        <span>未知</span>
+                        <span class="status-cancelled">${vo.status}</span>
                     </c:otherwise>
                 </c:choose>
             </td>

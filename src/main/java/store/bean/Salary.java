@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class Salary {
     private Integer id;
+    private Integer employeeId;
     private String employeeName;
     private Integer year;
     private Integer month;
@@ -12,21 +13,30 @@ public class Salary {
     private Double deduction;
     private Double totalSalary;
     private Double actualSalary;
-    private Integer status;
-    private String payer;
+    private Integer status; // 0:未发放, 1:已发放
+    private String paymentBy;
+    private Date paymentTime;
+    private String remark;
     private Date createTime;
     private Date updateTime;
     private String createBy;
     private String updateBy;
 
-    // getters and setters...
-
+    // getters and setters
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Integer employeeId) {
+        this.employeeId = employeeId;
     }
 
     public String getEmployeeName() {
@@ -53,14 +63,6 @@ public class Salary {
         this.month = month;
     }
 
-    public Double getBonus() {
-        return bonus;
-    }
-
-    public void setBonus(Double bonus) {
-        this.bonus = bonus;
-    }
-
     public Double getBaseSalary() {
         return baseSalary;
     }
@@ -69,12 +71,12 @@ public class Salary {
         this.baseSalary = baseSalary;
     }
 
-    public Double getTotalSalary() {
-        return totalSalary;
+    public Double getBonus() {
+        return bonus;
     }
 
-    public void setTotalSalary(Double totalSalary) {
-        this.totalSalary = totalSalary;
+    public void setBonus(Double bonus) {
+        this.bonus = bonus;
     }
 
     public Double getDeduction() {
@@ -83,6 +85,14 @@ public class Salary {
 
     public void setDeduction(Double deduction) {
         this.deduction = deduction;
+    }
+
+    public Double getTotalSalary() {
+        return totalSalary;
+    }
+
+    public void setTotalSalary(Double totalSalary) {
+        this.totalSalary = totalSalary;
     }
 
     public Double getActualSalary() {
@@ -101,12 +111,28 @@ public class Salary {
         this.status = status;
     }
 
-    public String getPayer() {
-        return payer;
+    public String getPaymentBy() {
+        return paymentBy;
     }
 
-    public void setPayer(String payer) {
-        this.payer = payer;
+    public void setPaymentBy(String paymentBy) {
+        this.paymentBy = paymentBy;
+    }
+
+    public Date getPaymentTime() {
+        return paymentTime;
+    }
+
+    public void setPaymentTime(Date paymentTime) {
+        this.paymentTime = paymentTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public Date getCreateTime() {
