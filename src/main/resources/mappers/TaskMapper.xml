@@ -2,97 +2,205 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="store.mapper.TaskMapper">
     <resultMap id="BaseResultMap" type="store.bean.Task">
-        <id column="id" property="id" jdbcType="INTEGER"/>
-        <result column="title" property="title" jdbcType="VARCHAR"/>
-        <result column="content" property="content" jdbcType="VARCHAR"/>
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
-        <result column="creator_id" property="creatorId" jdbcType="INTEGER"/>
-        <result column="creator_name" property="creatorName" jdbcType="VARCHAR"/>
-        <result column="executor_id" property="executorId" jdbcType="INTEGER"/>
-        <result column="executor_name" property="executorName" jdbcType="VARCHAR"/>
-        <result column="priority" property="priority" jdbcType="INTEGER"/>
-        <result column="status" property="status" jdbcType="INTEGER"/>
-        <result column="start_time" property="startTime" jdbcType="TIMESTAMP"/>
-        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
-        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="description" property="description" />
+        <result column="creator" property="creator" />
+        <result column="assignee" property="assignee" />
+        <result column="priority" property="priority" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_by" property="createBy" />
+        <result column="update_by" property="updateBy" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, title, content, create_time, creator_id, creator_name, executor_id, executor_name,
-        priority, status, start_time, end_time, update_time
+        id, title, description, creator, assignee, priority, status,
+        create_time, update_time, create_by, update_by
     </sql>
 
     <insert id="insert" parameterType="store.bean.Task" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO task (
-            title, content, create_time, creator_id, creator_name,
-            executor_id, executor_name, priority, status
+        INSERT INTO sys_task (
+            title, description, creator, assignee, priority,
+            status, create_by, create_time, update_time
         ) VALUES (
-                     #{title}, #{content}, NOW(), #{creatorId}, #{creatorName},
-                     #{executorId}, #{executorName}, #{priority}, #{status}
+                     #{title}, #{description}, #{creator}, #{assignee}, #{priority},
+                     #{status}, #{createBy}, NOW(), NOW()
                  )
     </insert>
-
+    <select id="getTasksByConditionWithPaginationAndSort" resultMap="BaseResultMap">
+        SELECT * FROM task
+        <where>
+            <if test="condition.title != null and condition.title != ''">
+                title LIKE CONCAT('%', #{condition.title}, '%')
+            </if>
+            <if test="condition.creator != null and condition.creator != ''">
+                AND creator LIKE CONCAT('%', #{condition.creator}, '%')
+            </if>
+            <if test="condition.assignee != null and condition.assignee != ''">
+                AND assignee LIKE CONCAT('%', #{condition.assignee}, '%')
+            </if>
+        </where>
+        ORDER BY ${orderBy}
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
     <delete id="deleteById" parameterType="int">
-        DELETE FROM task WHERE id = #{id}
+        DELETE FROM sys_task WHERE id = #{id}
     </delete>
 
-    <delete id="deleteByIds">
-        DELETE FROM task WHERE id IN
-        <foreach collection="list" item="id" open="(" separator="," close=")">
+    <delete id="batchDelete">
+        DELETE FROM sys_task WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
 
     <update id="update" parameterType="store.bean.Task">
-        UPDATE task SET
-                        title = #{title},
-                        content = #{content},
-                        executor_id = #{executorId},
-                        executor_name = #{executorName},
-                        priority = #{priority},
-                        status = #{status},
-                        update_time = NOW()
+        UPDATE sys_task
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="creator != null">creator = #{creator},</if>
+            <if test="assignee != null">assignee = #{assignee},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = NOW()
+        </set>
         WHERE id = #{id}
     </update>
 
     <select id="selectById" parameterType="int" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List"/>
-        FROM task WHERE id = #{id}
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_task
+        WHERE id = #{id}
     </select>
 
     <select id="selectAll" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List"/>
-        FROM task
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_task
+        ORDER BY id DESC
     </select>
 
     <select id="selectByCondition" parameterType="store.bean.Task" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List"/>
-        FROM task
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_task
         <where>
             <if test="title != null and title != ''">
                 AND title LIKE CONCAT('%', #{title}, '%')
             </if>
-            <if test="creatorName != null and creatorName != ''">
-                AND creator_name LIKE CONCAT('%', #{creatorName}, '%')
+            <if test="creator != null and creator != ''">
+                AND creator LIKE CONCAT('%', #{creator}, '%')
             </if>
-            <if test="executorName != null and executorName != ''">
-                AND executor_name LIKE CONCAT('%', #{executorName}, '%')
+            <if test="assignee != null and assignee != ''">
+                AND assignee LIKE CONCAT('%', #{assignee}, '%')
             </if>
-            <if test="priority != null">
+            <if test="priority != null and priority != ''">
                 AND priority = #{priority}
             </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
         </where>
+        ORDER BY id DESC
     </select>
 
     <select id="countByTitle" parameterType="string" resultType="int">
-        SELECT COUNT(*) FROM task WHERE title = #{title}
+        SELECT COUNT(*) FROM sys_task WHERE title = #{title}
     </select>
 
-    <select id="selectWithOrder" parameterType="string" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List"/>
-        FROM task
-        <if test="orderBy != null and orderBy != ''">
-            ORDER BY ${orderBy}
-        </if>
+    <select id="selectAllOrderBy" parameterType="string" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_task
+        ORDER BY ${orderBy}
+    </select>
+
+    <!-- 分页相关的方法 -->
+    <select id="selectAllWithPagination" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_task
+        ORDER BY id DESC
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="selectByConditionWithPagination" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_task
+        <where>
+            <if test="condition.title != null and condition.title != ''">
+                AND title LIKE CONCAT('%', #{condition.title}, '%')
+            </if>
+            <if test="condition.creator != null and condition.creator != ''">
+                AND creator LIKE CONCAT('%', #{condition.creator}, '%')
+            </if>
+            <if test="condition.assignee != null and condition.assignee != ''">
+                AND assignee LIKE CONCAT('%', #{condition.assignee}, '%')
+            </if>
+            <if test="condition.priority != null and condition.priority != ''">
+                AND priority = #{condition.priority}
+            </if>
+            <if test="condition.status != null">
+                AND status = #{condition.status}
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="selectAllOrderByWithPagination" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_task
+        ORDER BY ${orderBy}
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="selectByConditionOrderByWithPagination" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_task
+        <where>
+            <if test="condition.title != null and condition.title != ''">
+                AND title LIKE CONCAT('%', #{condition.title}, '%')
+            </if>
+            <if test="condition.creator != null and condition.creator != ''">
+                AND creator LIKE CONCAT('%', #{condition.creator}, '%')
+            </if>
+            <if test="condition.assignee != null and condition.assignee != ''">
+                AND assignee LIKE CONCAT('%', #{condition.assignee}, '%')
+            </if>
+            <if test="condition.priority != null and condition.priority != ''">
+                AND priority = #{condition.priority}
+            </if>
+            <if test="condition.status != null">
+                AND status = #{condition.status}
+            </if>
+        </where>
+        ORDER BY ${orderBy}
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM sys_task
+    </select>
+
+    <select id="countByCondition" parameterType="store.bean.Task" resultType="int">
+        SELECT COUNT(*) FROM sys_task
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="creator != null and creator != ''">
+                AND creator LIKE CONCAT('%', #{creator}, '%')
+            </if>
+            <if test="assignee != null and assignee != ''">
+                AND assignee LIKE CONCAT('%', #{assignee}, '%')
+            </if>
+            <if test="priority != null and priority != ''">
+                AND priority = #{priority}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
     </select>
 </mapper>

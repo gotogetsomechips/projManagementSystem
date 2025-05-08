@@ -12,7 +12,7 @@ body {
 	margin-right: 0px;
 	margin-bottom: 0px;
 }
-.tabfont01 {	
+.tabfont01 {
 	font-family: "宋体";
 	font-size: 9px;
 	color: #555555;
@@ -35,7 +35,7 @@ body {
 	font-size: 14px;
 	height: 37px;
 }
-html { overflow-x: auto; overflow-y: auto; border:0;} 
+html { overflow-x: auto; overflow-y: auto; border:0;}
 -->
 </style>
 
@@ -80,7 +80,7 @@ function link(){
     <td height="30">      <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
           <td height="62" background="images/nav04.gif">
-            
+
 		   <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
 		    <tr>
 			  <td width="24"><img src="images/ico07.gif" width="20" height="18" /></td>
@@ -89,11 +89,11 @@ function link(){
 				    <option>按注销时间</option>
 			      </select>
 			   <input name="textfield" type="text" size="12" readonly="readonly"/><span class="newfont06">至</span>
-			   <input name="textfield" type="text" size="12" readonly="readonly"/>	
+			   <input name="textfield" type="text" size="12" readonly="readonly"/>
 			   <input name="Submit" type="button" class="right-button02" value="查 询" /></td>
 			   <td width="679" align="left"><a href="#" onclick="sousuo()">
 			     <input name="Submit" type="button" class="right-button07" value="高级搜索" />
-			   </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>	
+			   </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
 		    </tr>
           </table></td>
         </tr>
@@ -105,7 +105,7 @@ function link(){
           	 <tr>
                <td height="20"><span class="newfont07">选择：<a href="#" class="right-font08" onclick="selectAll();">全选</a>-<a href="#" class="right-font08" onclick="unselectAll();">反选</a></span>
 		           <input name="Submit" type="button" class="right-button08" value="删除所选人员信息" /> <input name="Submit" type="button" class="right-button08" value="添加人员信息" onclick="link();" />
-		           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+		           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	              </td>
           </tr>
               <tr>

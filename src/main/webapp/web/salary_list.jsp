@@ -12,7 +12,7 @@ body {
 	margin-right: 0px;
 	margin-bottom: 0px;
 }
-.tabfont01 {	
+.tabfont01 {
 	font-family: "宋体";
 	font-size: 9px;
 	color: #555555;
@@ -35,7 +35,7 @@ body {
 	font-size: 14px;
 	height: 37px;
 }
-html { overflow-x: auto; overflow-y: auto; border:0;} 
+html { overflow-x: auto; overflow-y: auto; border:0;}
 -->
 </style>
 
@@ -74,7 +74,7 @@ function unselectAll(){
 <body>
 <form name="fom" id="fom" method="post">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
- 
+
   <tr>
     <td height="30"><table width="100%" border="0" cellspacing="0" cellpadding="0">
       <tr>
@@ -113,7 +113,7 @@ function unselectAll(){
     <td><table id="subtree1" style="DISPLAY: " width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
           <td><table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
-	
+
 					                  <tr>
                     <td height="20" colspan="9" align="center" bgcolor="#EEEEEE"class="tablestyle_title"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 员工月工资列表 &nbsp;</td>
                     </tr>
@@ -145,7 +145,7 @@ function unselectAll(){
                     <td bgcolor="#FFFFFF"><a href="">编辑|</a><a href="">查看|</a>
                       <a href="">删除</a></td>
                   </tr>
-                  
+
                 </table></td>
               </tr>
             </table></td>

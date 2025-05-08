@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>添加任务</title>
+    <title>编辑薪资记录</title>
     <style type="text/css">
         body {
             margin: 0;
@@ -120,17 +120,15 @@
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript">
+    <script>
+        function showErrorModal(message) {
+            var modal = document.getElementById("errorModal");
+            var errorMessage = document.getElementById("errorMessage");
+            errorMessage.textContent = message;
+            modal.style.display = "block";
+        }
+
         $(document).ready(function() {
-
-
-            function showErrorModal(message) {
-                var modal = document.getElementById("errorModal");
-                var errorMessage = document.getElementById("errorMessage");
-                errorMessage.textContent = message;
-                modal.style.display = "block";
-            }
-
             // 关闭弹窗
             $(".btn-close").click(function() {
                 $("#errorModal").hide();
@@ -149,7 +147,24 @@
             if (error && error.trim() !== "") {
                 showErrorModal(error);
             }
+
+            // 自动计算总工资和实发工资
+            $("#baseSalary, #bonus, #deduction").on('input', function() {
+                calculateSalaries();
+            });
         });
+
+        function calculateSalaries() {
+            var baseSalary = parseFloat($("#baseSalary").val()) || 0;
+            var bonus = parseFloat($("#bonus").val()) || 0;
+            var deduction = parseFloat($("#deduction").val()) || 0;
+
+            var totalSalary = baseSalary + bonus;
+            var actualSalary = totalSalary - deduction;
+
+            $("#totalSalary").val(totalSalary.toFixed(2));
+            $("#actualSalary").val(actualSalary.toFixed(2));
+        }
     </script>
 </head>
 <body>
@@ -169,50 +184,78 @@
 </div>
 
 <div class="container">
-    <div class="form-title">添加新任务</div>
+    <div class="form-title">编辑薪资记录</div>
 
-    <form action="${pageContext.request.contextPath}/task/add?sortField=${param.sortField}&sortDirection=${param.sortDirection}" method="post">
+    <form action="${pageContext.request.contextPath}/salary/edit?sortField=${param.sortField}&sortDirection=${param.sortDirection}" method="post">
+        <input type="hidden" name="id" value="${vo.id}" />
+        <input type="hidden" name="pageNum" value="${pageNum}" />
+
         <div class="form-group">
-            <label for="title">任务标题</label>
-            <input type="text" id="title" name="title" class="form-control" required />
+            <label for="employeeName">员工姓名</label>
+            <input type="text" id="employeeName" name="employeeName" class="form-control" value="${vo.employeeName}" required />
         </div>
 
         <div class="form-group">
-            <label for="description">任务描述</label>
-            <textarea id="description" name="description" class="form-control"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="creator">发送者</label>
-            <input type="text" id="creator" name="creator" class="form-control" required />
-        </div>
-
-        <div class="form-group">
-            <label for="assignee">执行人</label>
-            <input type="text" id="assignee" name="assignee" class="form-control" required />
-        </div>
-
-        <div class="form-group">
-            <label for="priority">优先级</label>
-            <select id="priority" name="priority" class="form-control">
-                <option value="high">紧急</option>
-                <option value="medium" selected>中等</option>
-                <option value="low">普通</option>
+            <label for="year">年份</label>
+            <select id="year" name="year" class="form-control" required>
+                <option value="">请选择年份</option>
+                <c:forEach var="i" begin="2020" end="2030">
+                    <option value="${i}" ${vo.year == i ? 'selected' : ''}>${i}年</option>
+                </c:forEach>
             </select>
+        </div>
+
+        <div class="form-group">
+            <label for="month">月份</label>
+            <select id="month" name="month" class="form-control" required>
+                <option value="">请选择月份</option>
+                <c:forEach var="i" begin="1" end="12">
+                    <option value="${i}" ${vo.month == i ? 'selected' : ''}>${i}月</option>
+                </c:forEach>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="baseSalary">基本工资</label>
+            <input type="number" id="baseSalary" name="baseSalary" class="form-control" step="0.01" min="0" value="${vo.baseSalary}" required />
+        </div>
+
+        <div class="form-group">
+            <label for="bonus">奖金</label>
+            <input type="number" id="bonus" name="bonus" class="form-control" step="0.01" min="0" value="${vo.bonus}" />
+        </div>
+
+        <div class="form-group">
+            <label for="deduction">扣除金额</label>
+            <input type="number" id="deduction" name="deduction" class="form-control" step="0.01" min="0" value="${vo.deduction}" />
+        </div>
+
+        <div class="form-group">
+            <label for="totalSalary">总工资</label>
+            <input type="number" id="totalSalary" name="totalSalary" class="form-control" step="0.01" min="0" value="${vo.totalSalary}" readonly />
+        </div>
+
+        <div class="form-group">
+            <label for="actualSalary">实发工资</label>
+            <input type="number" id="actualSalary" name="actualSalary" class="form-control" step="0.01" min="0" value="${vo.actualSalary}" readonly />
         </div>
 
         <div class="form-group">
             <label for="status">状态</label>
             <select id="status" name="status" class="form-control">
-                <option value="0" selected>待处理</option>
-                <option value="1">进行中</option>
-                <option value="2">已完成</option>
+                <option value="0" ${vo.status == 0 ? 'selected' : ''}>未发放</option>
+                <option value="1" ${vo.status == 1 ? 'selected' : ''}>已发放</option>
             </select>
         </div>
 
+        <div class="form-group">
+            <label for="payer">发放人</label>
+            <input type="text" id="payer" name="payer" class="form-control" value="${vo.payer}" />
+        </div>
+
         <div class="button-group">
-            <button type="submit" class="button button-submit">添加</button>
-            <a href="${pageContext.request.contextPath}/task/list" class="button button-cancel">取消</a>
+            <button type="submit" class="button button-submit">保存</button>
+            <a href="${pageContext.request.contextPath}/salary/list?pageNum=${pageNum}" class="button button-cancel">取消</a>
         </div>
     </form>
 </div>

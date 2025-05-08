@@ -1,4 +1,4 @@
-package store.service;
+package store.service.impl;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,27 +9,28 @@ import store.service.TaskService;
 
 @Service
 public class TaskServiceImpl implements TaskService {
+
     @Autowired
     private TaskMapper taskMapper;
 
     @Override
-    public boolean addTask(Task task) {
-        return taskMapper.insert(task) > 0;
+    public int addTask(Task task) {
+        return taskMapper.insert(task);
     }
 
     @Override
-    public boolean deleteTask(Integer id) {
-        return taskMapper.deleteById(id) > 0;
+    public int deleteTask(Integer id) {
+        return taskMapper.deleteById(id);
     }
 
     @Override
-    public boolean deleteTasks(List<Integer> ids) {
-        return taskMapper.deleteByIds(ids) > 0;
+    public int batchDelete(List<Integer> ids) {
+        return taskMapper.batchDelete(ids);
     }
 
     @Override
-    public boolean updateTask(Task task) {
-        return taskMapper.update(task) > 0;
+    public int updateTask(Task task) {
+        return taskMapper.update(task);
     }
 
     @Override
@@ -53,7 +54,37 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getTasksWithOrder(String orderBy) {
-        return taskMapper.selectWithOrder(orderBy);
+    public List<Task> getAllTasksOrderBy(String orderBy) {
+        return taskMapper.selectAllOrderBy(orderBy);
+    }
+
+    @Override
+    public List<Task> getAllTasksWithPagination(int startIndex, int pageSize) {
+        return taskMapper.selectAllWithPagination(startIndex, pageSize);
+    }
+
+    @Override
+    public List<Task> getTasksByConditionWithPagination(Task condition, int startIndex, int pageSize) {
+        return taskMapper.selectByConditionWithPagination(condition, startIndex, pageSize);
+    }
+
+    @Override
+    public List<Task> getAllTasksOrderByWithPagination(String orderBy, int startIndex, int pageSize) {
+        return taskMapper.selectAllOrderByWithPagination(orderBy, startIndex, pageSize);
+    }
+
+    @Override
+    public List<Task> getTasksByConditionOrderByWithPagination(Task condition, String orderBy, int startIndex, int pageSize) {
+        return taskMapper.selectByConditionOrderByWithPagination(condition, orderBy, startIndex, pageSize);
+    }
+
+    @Override
+    public int countAllTasks() {
+        return taskMapper.countAll();
+    }
+
+    @Override
+    public int countTasksByCondition(Task condition) {
+        return taskMapper.countByCondition(condition);
     }
 }

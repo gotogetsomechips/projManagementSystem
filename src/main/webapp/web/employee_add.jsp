@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>添加任务</title>
+    <title>添加员工</title>
     <style type="text/css">
         body {
             margin: 0;
@@ -122,8 +122,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-
-
             function showErrorModal(message) {
                 var modal = document.getElementById("errorModal");
                 var errorMessage = document.getElementById("errorMessage");
@@ -169,50 +167,60 @@
 </div>
 
 <div class="container">
-    <div class="form-title">添加新任务</div>
+    <div class="form-title">添加新员工</div>
 
-    <form action="${pageContext.request.contextPath}/task/add?sortField=${param.sortField}&sortDirection=${param.sortDirection}" method="post">
+    <form action="${pageContext.request.contextPath}/employee/add?sortField=${param.sortField}&sortDirection=${param.sortDirection}" method="post">
         <div class="form-group">
-            <label for="title">任务标题</label>
-            <input type="text" id="title" name="title" class="form-control" required />
+            <label for="employeeId">员工编号</label>
+            <input type="text" id="employeeId" name="employeeId" class="form-control" required />
         </div>
 
         <div class="form-group">
-            <label for="description">任务描述</label>
-            <textarea id="description" name="description" class="form-control"></textarea>
+            <label for="realName">员工姓名</label>
+            <input type="text" id="realName" name="realName" class="form-control" required />
         </div>
 
         <div class="form-group">
-            <label for="creator">发送者</label>
-            <input type="text" id="creator" name="creator" class="form-control" required />
+            <label for="position">职位</label>
+            <input type="text" id="position" name="position" class="form-control" />
         </div>
 
         <div class="form-group">
-            <label for="assignee">执行人</label>
-            <input type="text" id="assignee" name="assignee" class="form-control" required />
-        </div>
-
-        <div class="form-group">
-            <label for="priority">优先级</label>
-            <select id="priority" name="priority" class="form-control">
-                <option value="high">紧急</option>
-                <option value="medium" selected>中等</option>
-                <option value="low">普通</option>
+            <label for="employeeType">员工类型</label>
+            <select id="employeeType" name="employeeType" class="form-control">
+                <option value="正式员工" selected>正式员工</option>
+                <option value="临时工">临时工</option>
+                <option value="实习生">实习生</option>
+                <option value="外包员工">外包员工</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="status">状态</label>
-            <select id="status" name="status" class="form-control">
-                <option value="0" selected>待处理</option>
-                <option value="1">进行中</option>
-                <option value="2">已完成</option>
+            <label for="idCard">身份证号码</label>
+            <input type="text" id="idCard" name="idCard" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="gender">性别</label>
+            <select id="gender" name="gender" class="form-control">
+                <option value="男" selected>男</option>
+                <option value="女">女</option>
             </select>
+        </div>
+
+        <div class="form-group">
+            <label for="birthDate">出生年月</label>
+            <input type="date" id="birthDate" name="birthDate" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="phone">联系电话</label>
+            <input type="text" id="phone" name="phone" class="form-control" required />
         </div>
 
         <div class="button-group">
             <button type="submit" class="button button-submit">添加</button>
-            <a href="${pageContext.request.contextPath}/task/list" class="button button-cancel">取消</a>
+            <a href="${pageContext.request.contextPath}/employee/list" class="button button-cancel">取消</a>
         </div>
     </form>
 </div>

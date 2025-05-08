@@ -2,13 +2,13 @@ package store.bean;
 
 import java.util.Date;
 
-public class Task {
+public class User {
     private Integer id;
-    private String title;
-    private String description;
-    private String creator;
-    private String assignee;
-    private String priority;
+    private String username;
+    private String password;
+    private String realName;
+    private String phone;
+    private String email;
     private Integer status;
     private Date createTime;
     private Date updateTime;
@@ -16,69 +16,91 @@ public class Task {
     private String updateBy;
 
     // getters and setters
+
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
-    public String getTitle() {
-        return title;
+
+    public String getUsername() {
+        return username;
     }
-    public void setTitle(String title) {
-        this.title = title;
+
+    public void setUsername(String username) {
+        this.username = username;
     }
-    public String getDescription() {
-        return description;
+
+    public String getPassword() {
+        return password;
     }
-    public void setDescription(String description) {
-        this.description = description;
+
+    public void setPassword(String password) {
+        this.password = password;
     }
-    public String getCreator() {
-        return creator;
+
+    public String getRealName() {
+        return realName;
     }
-    public void setCreator(String creator) {
-        this.creator = creator;
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
-    public String getAssignee() {
-        return assignee;
+
+    public String getPhone() {
+        return phone;
     }
-    public void setAssignee(String assignee) {
-        this.assignee = assignee;
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
-    public String getPriority() {
-        return priority;
+
+    public String getEmail() {
+        return email;
     }
-    public void setPriority(String priority) {
-        this.priority = priority;
+
+    public void setEmail(String email) {
+        this.email = email;
     }
+
     public Integer getStatus() {
         return status;
     }
+
     public void setStatus(Integer status) {
         this.status = status;
     }
+
     public Date getCreateTime() {
         return createTime;
     }
+
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+
     public Date getUpdateTime() {
         return updateTime;
     }
+
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
     public String getCreateBy() {
         return createBy;
     }
+
     public void setCreateBy(String createBy) {
         this.createBy = createBy;
     }
+
     public String getUpdateBy() {
         return updateBy;
     }
+
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
     }

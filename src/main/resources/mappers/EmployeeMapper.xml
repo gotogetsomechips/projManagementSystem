@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="store.mapper.EmployeeMapper">
+    <resultMap id="BaseResultMap" type="store.bean.Employee">
+        <id column="id" property="id" />
+        <result column="emp_no" property="empNo" />
+        <result column="emp_name" property="empName" />
+        <result column="position" property="position" />
+        <result column="emp_type" property="empType" />
+        <result column="id_card" property="idCard" />
+        <result column="gender" property="gender" />
+        <result column="age" property="age" />
+        <result column="birth_date" property="birthDate" />
+        <result column="phone" property="phone" />
+        <result column="email" property="email" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_by" property="createBy" />
+        <result column="update_by" property="updateBy" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, emp_no, emp_name, position, emp_type, id_card, gender, age, birth_date,
+        phone, email, status, create_time, update_time, create_by, update_by
+    </sql>
+
+    <insert id="insert" parameterType="store.bean.Employee" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_employee (
+            emp_no, emp_name, position, emp_type, id_card, gender, age, birth_date,
+            phone, email, status, create_by, create_time, update_time
+        ) VALUES (
+                     #{empNo}, #{empName}, #{position}, #{empType}, #{idCard}, #{gender}, #{age}, #{birthDate},
+                     #{phone}, #{email}, #{status}, #{createBy}, NOW(), NOW()
+                 )
+    </insert>
+
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM sys_employee WHERE id = #{id}
+    </delete>
+
+    <delete id="batchDelete">
+        DELETE FROM sys_employee WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="update" parameterType="store.bean.Employee">
+        UPDATE sys_employee
+        <set>
+            <if test="empNo != null">emp_no = #{empNo},</if>
+            <if test="empName != null">emp_name = #{empName},</if>
+            <if test="position != null">position = #{position},</if>
+            <if test="empType != null">emp_type = #{empType},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="birthDate != null">birth_date = #{birthDate},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectById" parameterType="int" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectByCondition" parameterType="store.bean.Employee" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        <where>
+            <if test="empNo != null and empNo != ''">
+                AND emp_no LIKE CONCAT('%', #{empNo}, '%')
+            </if>
+            <if test="empName != null and empName != ''">
+                AND emp_name LIKE CONCAT('%', #{empName}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                AND phone LIKE CONCAT('%', #{phone}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="countByEmpNo" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM sys_employee WHERE emp_no = #{empNo}
+    </select>
+
+    <select id="selectAllOrderBy" parameterType="string" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        ORDER BY ${orderBy}
+    </select>
+
+    <!-- 分页相关的方法 -->
+    <select id="selectAllWithPagination" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        ORDER BY id DESC
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="selectByConditionWithPagination" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        <where>
+            <if test="condition.empNo != null and condition.empNo != ''">
+                AND emp_no LIKE CONCAT('%', #{condition.empNo}, '%')
+            </if>
+            <if test="condition.empName != null and condition.empName != ''">
+                AND emp_name LIKE CONCAT('%', #{condition.empName}, '%')
+            </if>
+            <if test="condition.phone != null and condition.phone != ''">
+                AND phone LIKE CONCAT('%', #{condition.phone}, '%')
+            </if>
+            <if test="condition.status != null">
+                AND status = #{condition.status}
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="selectAllOrderByWithPagination" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        ORDER BY ${orderBy}
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="selectByConditionOrderByWithPagination" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        <where>
+            <if test="condition.empNo != null and condition.empNo != ''">
+                AND emp_no LIKE CONCAT('%', #{condition.empNo}, '%')
+            </if>
+            <if test="condition.empName != null and condition.empName != ''">
+                AND emp_name LIKE CONCAT('%', #{condition.empName}, '%')
+            </if>
+            <if test="condition.phone != null and condition.phone != ''">
+                AND phone LIKE CONCAT('%', #{condition.phone}, '%')
+            </if>
+            <if test="condition.status != null">
+                AND status = #{condition.status}
+            </if>
+        </where>
+        ORDER BY ${orderBy}
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM sys_employee
+    </select>
+
+    <select id="countByCondition" parameterType="store.bean.Employee" resultType="int">
+        SELECT COUNT(*) FROM sys_employee
+        <where>
+            <if test="empNo != null and empNo != ''">
+                AND emp_no LIKE CONCAT('%', #{empNo}, '%')
+            </if>
+            <if test="empName != null and empName != ''">
+                AND emp_name LIKE CONCAT('%', #{empName}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                AND phone LIKE CONCAT('%', #{phone}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="getFixedOrderEmployeeIds" resultType="int">
+        SELECT id FROM sys_employee
+        <where>
+            <if test="condition.empNo != null and condition.empNo != ''">
+                AND emp_no LIKE CONCAT('%', #{condition.empNo}, '%')
+            </if>
+            <if test="condition.empName != null and condition.empName != ''">
+                AND emp_name LIKE CONCAT('%', #{condition.empName}, '%')
+            </if>
+            <if test="condition.phone != null and condition.phone != ''">
+                AND phone LIKE CONCAT('%', #{condition.phone}, '%')
+            </if>
+        </where>
+        ORDER BY ${orderBy}
+    </select>
+
+    <select id="getEmployeesByIds" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY FIELD(id,
+        <foreach collection="ids" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+    </select>
+
+    <select id="selectByEmpNo" parameterType="string" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_employee
+        WHERE emp_no = #{empNo}
+    </select>
+
+    <update id="updateStatusByEmpNo">
+        UPDATE sys_employee
+        SET status = #{status}, update_time = NOW()
+        WHERE emp_no = #{empNo}
+    </update>
+</mapper>

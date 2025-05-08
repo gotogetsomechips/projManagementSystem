@@ -77,11 +77,11 @@ function list(idstr){
 				<table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
 				  <tr>
 					<td width="25%" rowspan="2"><img src="images/ico02.gif" width="35" height="35" /></td>
-					<td width="75%" height="22" class="left-font01">您好，<span class="left-font02">king</span></td>
+					<td width="75%" height="22" class="left-font01">欢迎您，<span class="left-font02">${currentUser.realName}</span></td>
 				  </tr>
 				  <tr>
 					<td height="22" class="left-font01">
-						[&nbsp;<a href="login.jsp" target="_top" class="left-font01">退出</a>&nbsp;]</td>
+						[&nbsp;<a href="<c:url value='/logout' target="_top" class="left-font01">退出</a>&nbsp;]</td>
 				  </tr>
 				</table>
 			</td>
@@ -115,13 +115,13 @@ function list(idstr){
 
 
 
-	  <!--  客户系统开始    -->
+	  <!--  用户系统开始    -->
 	  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="left-table03">
           <tr>
             <td height="29"><table width="85%" border="0" align="center" cellpadding="0" cellspacing="0">
                 <tr>
                   <td width="8%" height="12"><img name="img2" id="img2" src="images/ico04.gif" width="8" height="11" /></td>
-                  <td width="92%"><a href="javascript:" target="mainFrame" class="left-font03" onClick="list('2');" >客户系统</a></td>
+                  <td width="92%"><a href="javascript:" target="mainFrame" class="left-font03" onClick="list('2');" >用户系统</a></td>
                 </tr>
             </table></td>
           </tr>
@@ -131,11 +131,11 @@ function list(idstr){
 
 		<tr>
           <td width="9%" height="20" ><img id="xiaotu7" src="images/ico06.gif" width="8" height="12" /></td>
-          <td width="91%"><a href="user_list.jsp" target="mainFrame" class="left-font03" onClick="tupian('7');">客户信息查看</a></td>
+          <td width="91%"><a href="user/list" target="mainFrame" class="left-font03" onClick="tupian('7');">用户信息查看</a></td>
         </tr>
       </table>
 
-	  <!--  客户系统结束    -->
+	  <!--  用户系统结束    -->
 
 	  <!--  人员系统开始    -->
 	  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="left-table03">
@@ -152,7 +152,7 @@ function list(idstr){
 	  <table id="subtree3" style="DISPLAY: none" width="80%" border="0" align="center" cellpadding="0" cellspacing="0" class="left-table02">
         <tr>
           <td width="9%" height="20" ><img id="xiaotu8" src="images/ico06.gif" width="8" height="12" /></td>
-          <td width="91%"><a href="employees_list.jsp" target="mainFrame" class="left-font03" onClick="tupian('8');">人员信息查看</a></td>
+          <td width="91%"><a href="employee/list" target="mainFrame" class="left-font03" onClick="tupian('8');">人员信息查看</a></td>
         </tr>
       </table>
 
@@ -173,7 +173,7 @@ function list(idstr){
 	  <table id="subtree4" style="DISPLAY: none" width="80%" border="0" align="center" cellpadding="0" cellspacing="0" class="left-table02">
 	  	<tr>
           <td width="9%" height="20" ><img id="xiaotu12" src="images/ico06.gif" width="8" height="12" /></td>
-          <td width="91%"><a href="salaries_list.jsp" target="mainFrame" class="left-font03" onClick="tupian('12');">员工考勤信息查看</a></td>
+          <td width="91%"><a href="salary/list" target="mainFrame" class="left-font03" onClick="tupian('12');">员工考勤信息查看</a></td>
         </tr>
       </table>
 
