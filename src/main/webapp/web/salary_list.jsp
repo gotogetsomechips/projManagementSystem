@@ -350,32 +350,39 @@
             // 根据字段和方向进行排序
             rows.sort(function(a, b) {
                 var A, B;
+                var compareResult = 0;
 
                 // 获取对应字段的单元格内容
                 if (field === 'employeeName') {
-                    A = $(a).find('td:eq(1)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(1)').text().trim().toLowerCase();
+                    A = $(a).find('td:eq(1)').text().trim();
+                    B = $(b).find('td:eq(1)').text().trim();
+                    compareResult = A.localeCompare(B, 'zh-Hans-CN');
                 } else if (field === 'year') {
                     A = parseInt($(a).find('td:eq(2)').text().trim());
                     B = parseInt($(b).find('td:eq(2)').text().trim());
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 } else if (field === 'month') {
                     A = parseInt($(a).find('td:eq(3)').text().trim());
                     B = parseInt($(b).find('td:eq(3)').text().trim());
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 } else if (field === 'totalSalary') {
                     A = parseFloat($(a).find('td:eq(4)').text().trim());
                     B = parseFloat($(b).find('td:eq(4)').text().trim());
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 } else if (field === 'actualSalary') {
                     A = parseFloat($(a).find('td:eq(6)').text().trim());
                     B = parseFloat($(b).find('td:eq(6)').text().trim());
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 } else if (field === 'status') {
                     // 提取状态文本（不含HTML标记）
-                    A = $(a).find('td:eq(7)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(7)').text().trim().toLowerCase();
+                    A = $(a).find('td:eq(7)').text().trim();
+                    B = $(b).find('td:eq(7)').text().trim();
 
                     // 自定义排序顺序：已发放>未发放
                     var statusOrder = {'已发放': 2, '未发放': 1};
                     A = statusOrder[A] || 0;
                     B = statusOrder[B] || 0;
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 } else {
                     // 默认按ID排序
                     A = $(a).find('input[name="delid"]').val();
@@ -383,18 +390,11 @@
                     // 确保数值比较
                     A = parseInt(A);
                     B = parseInt(B);
-                }
-
-                // 排序规则
-                var result = 0;
-                if (A < B) {
-                    result = -1;
-                } else if (A > B) {
-                    result = 1;
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 }
 
                 // 根据排序方向调整结果
-                return currentSort.direction === "ASC" ? result : -result;
+                return currentSort.direction === "ASC" ? compareResult : -compareResult;
             });
 
             // 重新添加排序后的行到表格中
@@ -402,7 +402,6 @@
                 $(row).detach().appendTo('table.newfont03 tbody');
             });
         }
-
         function updateSortIndicators() {
             // 清除所有排序指示器
             $(".sortable").removeClass("sort-asc sort-desc sort-icon").addClass("sort-icon");

@@ -304,11 +304,21 @@
             // 根据字段和方向进行排序
             rows.sort(function(a, b) {
                 var A, B;
+                var compareResult = 0;
 
                 // 获取对应字段的单元格内容
                 if (field === 'title') {
-                    A = $(a).find('td:eq(1)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(1)').text().trim().toLowerCase();
+                    A = $(a).find('td:eq(1)').text().trim();
+                    B = $(b).find('td:eq(1)').text().trim();
+                    compareResult = A.localeCompare(B, 'zh-Hans-CN');
+                } else if (field === 'sender') {
+                    A = $(a).find('td:eq(2)').text().trim();
+                    B = $(b).find('td:eq(2)').text().trim();
+                    compareResult = A.localeCompare(B, 'zh-Hans-CN');
+                } else if (field === 'receiver') {
+                    A = $(a).find('td:eq(3)').text().trim();
+                    B = $(b).find('td:eq(3)').text().trim();
+                    compareResult = A.localeCompare(B, 'zh-Hans-CN');
                 } else {
                     // 默认按ID排序
                     A = $(a).find('input[name="delid"]').val();
@@ -316,18 +326,11 @@
                     // 确保数值比较
                     A = parseInt(A);
                     B = parseInt(B);
-                }
-
-                // 排序规则
-                var result = 0;
-                if (A < B) {
-                    result = -1;
-                } else if (A > B) {
-                    result = 1;
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 }
 
                 // 根据排序方向调整结果
-                return currentSort.direction === "ASC" ? result : -result;
+                return currentSort.direction === "ASC" ? compareResult : -compareResult;
             });
 
             // 重新添加排序后的行到表格中

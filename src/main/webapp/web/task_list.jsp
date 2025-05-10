@@ -315,35 +315,41 @@
             // 根据字段和方向进行排序
             rows.sort(function(a, b) {
                 var A, B;
+                var compareResult = 0;
 
                 // 获取对应字段的单元格内容
                 if (field === 'title') {
-                    A = $(a).find('td:eq(1)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(1)').text().trim().toLowerCase();
+                    A = $(a).find('td:eq(1)').text().trim();
+                    B = $(b).find('td:eq(1)').text().trim();
+                    compareResult = A.localeCompare(B, 'zh-Hans-CN');
                 } else if (field === 'creator') {
-                    A = $(a).find('td:eq(2)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(2)').text().trim().toLowerCase();
+                    A = $(a).find('td:eq(2)').text().trim();
+                    B = $(b).find('td:eq(2)').text().trim();
+                    compareResult = A.localeCompare(B, 'zh-Hans-CN');
                 } else if (field === 'executor') {
-                    A = $(a).find('td:eq(3)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(3)').text().trim().toLowerCase();
+                    A = $(a).find('td:eq(3)').text().trim();
+                    B = $(b).find('td:eq(3)').text().trim();
+                    compareResult = A.localeCompare(B, 'zh-Hans-CN');
                 } else if (field === 'priority') {
                     // 提取优先级文本（不含HTML标记）
-                    A = $(a).find('td:eq(4)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(4)').text().trim().toLowerCase();
+                    A = $(a).find('td:eq(4)').text().trim();
+                    B = $(b).find('td:eq(4)').text().trim();
 
                     // 自定义排序顺序：高>中>低
                     var priorityOrder = {'高': 3, '中': 2, '低': 1};
                     A = priorityOrder[A] || 0;
                     B = priorityOrder[B] || 0;
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 } else if (field === 'status') {
                     // 提取状态文本（不含HTML标记）
-                    A = $(a).find('td:eq(5)').text().trim().toLowerCase();
-                    B = $(b).find('td:eq(5)').text().trim().toLowerCase();
+                    A = $(a).find('td:eq(5)').text().trim();
+                    B = $(b).find('td:eq(5)').text().trim();
 
                     // 自定义排序顺序：未开始>进行中>已完成>已取消
                     var statusOrder = {'未开始': 4, '进行中': 3, '已完成': 2, '已取消': 1};
                     A = statusOrder[A] || 0;
                     B = statusOrder[B] || 0;
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 } else {
                     // 默认按ID排序
                     A = $(a).find('input[name="delid"]').val();
@@ -351,18 +357,11 @@
                     // 确保数值比较
                     A = parseInt(A);
                     B = parseInt(B);
-                }
-
-                // 排序规则
-                var result = 0;
-                if (A < B) {
-                    result = -1;
-                } else if (A > B) {
-                    result = 1;
+                    compareResult = A < B ? -1 : (A > B ? 1 : 0);
                 }
 
                 // 根据排序方向调整结果
-                return currentSort.direction === "ASC" ? result : -result;
+                return currentSort.direction === "ASC" ? compareResult : -compareResult;
             });
 
             // 重新添加排序后的行到表格中
