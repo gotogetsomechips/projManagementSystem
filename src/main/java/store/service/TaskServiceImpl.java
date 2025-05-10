@@ -1,8 +1,10 @@
 package store.service;
 
+import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private TaskMapper taskMapper;
+
+    // 创建中文排序的Collator实例
+    private final Collator chineseCollator = Collator.getInstance(Locale.CHINA);
 
     @Override
     public int addTask(Task task) {
@@ -120,15 +125,20 @@ public class TaskServiceImpl implements TaskService {
     private Comparator<Task> getComparator(String sortField) {
         switch(sortField) {
             case "title":
-                return Comparator.comparing(Task::getTitle);
+                // 使用中文Collator进行title字段的排序
+                return (t1, t2) -> chineseCollator.compare(t1.getTitle(), t2.getTitle());
             case "creator":
-                return Comparator.comparing(Task::getCreator);
+                // 使用中文Collator进行creator字段的排序
+                return (t1, t2) -> chineseCollator.compare(t1.getCreator(), t2.getCreator());
             case "executor":
-                return Comparator.comparing(Task::getExecutor);
+                // 使用中文Collator进行executor字段的排序
+                return (t1, t2) -> chineseCollator.compare(t1.getExecutor(), t2.getExecutor());
             case "priority":
-                return Comparator.comparing(Task::getPriority);
+                // 对于可能包含中文的字段也使用Collator
+                return (t1, t2) -> chineseCollator.compare(t1.getPriority(), t2.getPriority());
             case "status":
-                return Comparator.comparing(Task::getStatus);
+                // 对于可能包含中文的字段也使用Collator
+                return (t1, t2) -> chineseCollator.compare(t1.getStatus(), t2.getStatus());
             default:
                 return Comparator.comparing(Task::getId);
         }

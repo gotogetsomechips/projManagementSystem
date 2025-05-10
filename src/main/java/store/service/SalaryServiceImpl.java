@@ -1,8 +1,10 @@
 package store.service;
 
+import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ public class SalaryServiceImpl implements SalaryService {
 
     @Autowired
     private SalaryMapper salaryMapper;
-
+    private final Collator chineseCollator = Collator.getInstance(Locale.CHINA);
     @Override
     public int addSalary(Salary salary) {
         return salaryMapper.insert(salary);
@@ -112,11 +114,11 @@ public class SalaryServiceImpl implements SalaryService {
                 .sorted(comparator)
                 .collect(Collectors.toList());
     }
-
     private Comparator<Salary> getComparator(String sortField) {
         switch(sortField) {
             case "employeeName":
-                return Comparator.comparing(Salary::getEmployeeName);
+                // 使用中文Collator进行字符串比较
+                return (s1, s2) -> chineseCollator.compare(s1.getEmployeeName(), s2.getEmployeeName());
             case "year":
                 return Comparator.comparing(Salary::getYear);
             case "month":

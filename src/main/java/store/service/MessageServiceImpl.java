@@ -1,8 +1,10 @@
 package store.service;
 
+import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     private MessageMapper messageMapper;
+
+    // 添加中文排序的Collator
+    private final Collator chineseCollator = Collator.getInstance(Locale.CHINA);
 
     @Override
     public int addMessage(Message message) {
@@ -117,11 +122,14 @@ public class MessageServiceImpl implements MessageService {
     private Comparator<Message> getComparator(String sortField) {
         switch(sortField) {
             case "title":
-                return Comparator.comparing(Message::getTitle);
+                // 使用中文Collator进行字符串比较
+                return (m1, m2) -> chineseCollator.compare(m1.getTitle(), m2.getTitle());
             case "sender":
-                return Comparator.comparing(Message::getSender);
+                // 使用中文Collator进行字符串比较
+                return (m1, m2) -> chineseCollator.compare(m1.getSender(), m2.getSender());
             case "receiver":
-                return Comparator.comparing(Message::getReceiver);
+                // 使用中文Collator进行字符串比较
+                return (m1, m2) -> chineseCollator.compare(m1.getReceiver(), m2.getReceiver());
             case "sendTime":
                 return Comparator.comparing(Message::getSendTime);
             default:
